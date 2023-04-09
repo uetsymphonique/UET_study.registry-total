@@ -1,0 +1,26 @@
+{
+  "name": "registrytotal",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start:dev": "SET NODE_ENV=development & nodemon --inspect index.js",
+    "start:prod": "SET NODE_ENV=production & nodemon --inspect index.js"
+
+  },
+  "dependencies": {
+    "argon2": "^0.30.3",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "hbs": "^4.2.0",
+    "http-errors": "~1.6.3",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.2",
+    "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
