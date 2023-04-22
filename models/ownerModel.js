@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const Schema = mongoose.Schema;
 
 const OwnerSchema = new Schema({
@@ -26,13 +27,15 @@ const OwnerSchema = new Schema({
         type: String,
         required: [true, 'A owner must have email'],
         validate: {
-            validator: function (value) {
-                // Email
-                return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value));
-            },
+            validator: validator.isEmail,
             message: props => `${props.value} is not a valid email address`
         },
         unique: true
+    },
+    role:{
+        type: String,
+        enum: ['individual', 'organization'],
+        default: 'individual'
     }
 });
 const Owner = mongoose.model('Owner', OwnerSchema);

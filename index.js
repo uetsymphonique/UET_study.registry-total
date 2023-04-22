@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+const dotenv  = require('dotenv');
 const app = require('./app');
 process.on('uncaughtException', (err) => {
     console.log('Uncaught rejection!!! Shutting down...');
