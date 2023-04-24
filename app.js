@@ -5,6 +5,7 @@ const path = require('path');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const registrationCentreRouter = require('./routes/registrationCentreRoutes');
+const userRouter = require('./routes/userRoutes');
 
 const app = express();
 console.log(process.env.NODE_ENV);
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/v1/registrationCentres', registrationCentreRouter);
+app.use('/api/v1/users', userRouter);
 
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

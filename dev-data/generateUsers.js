@@ -9,13 +9,13 @@ dotenv.config({path: './config.env'});
 const generateEmail = (role, index) => {
     return (role === 'admin') ? `admin${index}@vr.com.vn` : `user${index}@vr.com.vn`;
 }
-const createUser = (role, index, workFor='6442a233b14a706f27fa6a8c') => {
+const createUser = (role, index, workFor = '6442a233b14a706f27fa6a8c') => {
     return {
         ssn: randomFunction.generateUniqueString(-4, 10000000, 99999999),
         name: randomFunction.createNameOfPerson(),
-        dateOfBirth: randomFunction.createDate("01/01/1950", "12/31/2003"),
+        dateOfBirth: randomFunction.createDate("1950-01-01", "2003-12-31"),
         phone: randomFunction.createPhoneNumber(),
-        email: (role === 'admin') ? `admin${index}@vr.com.vn` : `user${index}@vr.com.vn`,
+        email: (role === 'admin') ? `admin${index}@vr.com.vn` : `staff${index}`,
         password: (role === 'admin') ? 'admin@#123' : 'staff@#123',
         role: role,
         passwordConfirm: (role === 'admin') ? 'admin@#123' : 'staff@#123',
@@ -23,21 +23,22 @@ const createUser = (role, index, workFor='6442a233b14a706f27fa6a8c') => {
     }
 }
 const users = [];
+const NUM_OF_ADMINS = 20;
+const NUM_OF_STAFFS_PER_CENTRE = 7;
 for (let i = 0; i < 20; i++) {
     users.push(createUser('admin', i));
 }
 const generateStaffs = async () => {
     let numOfStaffs = 0;
-    const centres = await RegistrationCentre.find().select('_id');
+    const centres = await RegistrationCentre.find()
+        .select('_id email');
     console.log(centres)
     centres.forEach((centre) => {
-        for(let i = 0; i < 7; i++) {
-            users.push(createUser('staff', numOfStaffs, centre._id));
+        for (let i = 0; i < NUM_OF_STAFFS_PER_CENTRE; i++) {
+            users.push(createUser('staff', `${i+1}.${centre.email}`, centre._id));
             numOfStaffs++;
         }
     });
-    console.log(`ok! generate: ${numOfStaffs}`);
-    console.log(users);
 }
 
 // fs.writeFileSync(`${__dirname}/users.json`, JSON.stringify(users));

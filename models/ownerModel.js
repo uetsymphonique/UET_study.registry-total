@@ -9,10 +9,10 @@ const OwnerSchema = new Schema({
     },
     address: {
         type: String,
-        required: [true, 'A owner must have address']
+        required: [true, 'A owner must have address'],
     },
     phone: {
-        type: Number,
+        type: String,
         required: [true, 'A owner must have phone number'],
         validate: {
             validator: function (value) {

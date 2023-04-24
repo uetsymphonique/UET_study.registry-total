@@ -13,8 +13,8 @@ const sendEmail = async options => {
 
     // 2) Define the email options
     const mailOptions = {
-        from: options.sender, // sender address
-        to: options.receiver, // list of receivers
+        from: 'RegistryTotal <registrytotal@vr.com.vn>', // sender address
+        to: options.email, // list of receivers
         subject: options.subject, // Subject line
         text: options.text // plain text body
         //html:

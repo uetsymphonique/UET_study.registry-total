@@ -1,4 +1,5 @@
 const rand = require('random-seed').create();
+const provinces = require('./../utils/provinces');
 const getRandomString = (length) => {
     const str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
     let randomString = '';
@@ -10,7 +11,7 @@ const getRandomString = (length) => {
 const getRandomNumber = (min, max) => rand.intBetween(min, max);
 
 const generateUniqueString = (lastDigit, min, max) => {
-    const timestamp = (new Date().getTime() * 2314464  + 12334524).toString().slice(lastDigit);
+    const timestamp = new Date().getTime().toString().slice(lastDigit);
     const randomNum = getRandomNumber(min, max);
     return `${timestamp}${randomNum}`;
 };
@@ -22,7 +23,7 @@ const createDate = (start, end) => {
     const mm = String(randomDate.getMonth() + 1).padStart(2, '0');
     const dd = String(randomDate.getDate()).padStart(2, '0');
     const yyyy = randomDate.getFullYear();
-    return `${mm}${dd}${yyyy}`;
+    return `${yyyy}-${mm}-${dd}`;
 };
 
 const createNameOfPerson = () => {
@@ -35,5 +36,10 @@ const createNameOfPerson = () => {
     return `${ho[randHo]} ${dem[randDem]} ${ten[randTen]}`;
 }
 const createPhoneNumber = () => `0${generateUniqueString(-4,10000,99999)}`;
+const createAddress = () => {
+    const addresses = provinces.getAddressNames();
+    const randAddress = Math.floor(Math.random() * addresses.length);
+    return addresses[randAddress];
+}
 exports.createSSN = () => generateUniqueString(-6, 100000, 999999);
-module.exports = { getRandomNumber, getRandomString, generateUniqueString, createDate, createPhoneNumber, createNameOfPerson};
+module.exports = { getRandomNumber, getRandomString, generateUniqueString, createDate, createPhoneNumber, createNameOfPerson, createAddress};

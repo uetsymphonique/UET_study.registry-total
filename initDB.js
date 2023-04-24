@@ -115,7 +115,7 @@ function createSpecification() {
         authorizedTowedMass: `${getRandomNumber(1000, 2000)} kg`,
         permissibleCarry: `${getRandomNumber(4, 7)}`,
         fuel: fuels[getRandomNumber(0, 2)],
-        engineDisplacement: `${getRandomNumber(1000, 2000)} cc`,
+        engineDisplacement: fuels[getRandomNumber(0, 2)],
         maxOutputToRpmRatio: `${getRandomNumber(50, 150)}/${getRandomNumber(4000, 7000)}`,
         numberOfTiresAndTireSize: `${numberOfTires[getRandomNumber(0, 2)]} - ${tireSizes[getRandomNumber(0, 5)]}`
     }
@@ -142,11 +142,11 @@ function createCars(numberPlate, index) {
     var specification = createSpecification();
     var registrationCert = {
         number: index,
-        registrationDate: createDate("01/01/2020", "03/31/2023"),
+        registrationDate: createDate("01/01/2020", "03/31/202"),
     }
     var owner = "123456789123";
     var types = ['Sedan', 'SUV', 'Hatchback', 'Pickup Truck'];
-    var brands = ['Toyota', 'Honda', 'Kia', 'Ford', 'Hyundai', 'Mitsubishi'];
+    var brands = ['Toyota', 'Honda', 'Kia', 'Ford', 'Hyundai', 'Mitsubishi', 'Mercedes', 'Maybach', 'Porsche', 'Mazda'];
     var colors = ['white', 'black', 'silver', 'red', 'blue', 'grey'];
     var countries = ['Japan', 'Korea', 'Thailand'];
     var places = ['Ho Chi Minh City', 'Hanoi', 'Da Nang', 'Can Tho'];
