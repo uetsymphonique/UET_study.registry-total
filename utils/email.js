@@ -24,7 +24,7 @@ const sendEmail = async options => {
         if (err) {
             console.log(err);
         } else {
-            console.log('Email sent:'+ result.message);
+            //console.log('Email sent:'+ result.message);
         }
     });
 }

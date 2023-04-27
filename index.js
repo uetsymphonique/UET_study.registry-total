@@ -26,7 +26,7 @@ mongoose
     .catch((err) => {
         console.log('Database connected unsuccessfully!! ERROR: ' + err.message);
     });
-console.log(process.env.PORT);
+//console.log(process.env.PORT);
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);

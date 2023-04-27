@@ -1,6 +1,4 @@
 const randomFunction = require("./randomFunction");
-const fs = require('fs');
-const path = require('path');
 const mongoose = require('mongoose');
 const User = require('./../models/userModel');
 const RegistrationCentre = require('./../models/registrationCentreModel');

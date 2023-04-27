@@ -117,8 +117,8 @@ UserSchema.methods.correctPassword = async function (candidatePassword, userPass
 UserSchema.methods.changesPasswordAfter = function (JWTTimestamp) {
     if (this.passwordChangedAt) {
         const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
-        console.log(this.passwordChangedAt);
-        console.log(changedTimestamp, JWTTimestamp);
+        //console.log(this.passwordChangedAt);
+        //console.log(changedTimestamp, JWTTimestamp);
         return JWTTimestamp < changedTimestamp;
     }
     return false;
@@ -131,7 +131,7 @@ UserSchema.methods.createPasswordResetToken = function () {
         .update(resetToken)
         .digest('hex');
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-    console.log({resetToken}, this.passwordResetToken);
+    //console.log({resetToken}, this.passwordResetToken);
     return resetToken;
 }
 const User = mongoose.model('User', UserSchema);

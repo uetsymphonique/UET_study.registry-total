@@ -75,7 +75,11 @@ const CarSchema = new Schema({
     },
     purpose: {
         type: String,
-        required: true
+        required: true,
+        enum: {
+            values: ['personal', 'business'],
+            message: 'Only personal or business purpose'
+        }
     },
     specification: {
         type: Specification,
@@ -85,6 +89,7 @@ const CarSchema = new Schema({
         type: RegistrationCertification,
         required: true
     }
-})
+});
+
 const Car = mongoose.model('Car', CarSchema);
 module.exports = Car;

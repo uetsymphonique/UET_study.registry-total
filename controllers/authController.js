@@ -13,6 +13,15 @@ const signToken = id => {
 
 const createSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
+    const cookieOptions = {
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    }
+    if(process.env.NODE_ENV === 'production'){
+        cookieOptions.secure = true;
+    }
+    res.cookie('jwt', token, cookieOptions);
+    user.password = undefined;
     res.status(statusCode).json({
         status: 'success',
         token,
@@ -24,7 +33,6 @@ const createSendToken = (user, statusCode, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create(req.body);
     createSendToken(newUser, 201, res);
-    const token = signToken(newUser._id);
 
 });
 
@@ -42,11 +50,7 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError('Incorrect email or password', 401));
     }
     //if everything ok
-    const token = signToken(user._id);
-    res.status(200).json({
-        status:'success',
-        token
-    });
+    createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -144,11 +148,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     // 3) Update changedPasswordAt property for the user
 
     // 4) Log the user in, send JWT
-    const token = signToken(user._id);
-    res.status(200).json({
-        status:'success',
-        token
-    });
+    createSendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -166,3 +166,23 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     // 4) Log the user in, send JWT
     createSendToken(user, 200, res);
 });
+
+exports.createAccount = catchAsync(async (req, res, next) => {
+    const newUser = await User.create(req.body);
+    const message = `Your account has been created. Please login your account with your email address and password: ${req.body.password}`;
+    try {
+        await sendEmail({
+            email: newUser.email,
+            subject: 'Your account has been created',
+            text: message
+        });
+        console.log(newUser.email);
+        res.status(200).json({
+            status:'success',
+            message: 'An email has been sent to the user!!'
+        });
+    } catch (err) {
+        console.log(err);
+        return next(new AppError('Email could not be sent', 500));
+    }
+})

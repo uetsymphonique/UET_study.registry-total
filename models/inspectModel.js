@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const InspectSchema = new Schema({
-    made_by:{
+    staff:{
         type: Schema.Types.ObjectId,
         ref: 'Staff',
         required: true
@@ -12,7 +12,7 @@ const InspectSchema = new Schema({
         ref: 'Car',
         required: true
     },
-    registration: {
+    inspection: {
         type: Schema.Types.ObjectId,
         ref: 'Inspection',
         required: true

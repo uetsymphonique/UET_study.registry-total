@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Owner = require('./../models/ownerModel');
 const Car = require('./../models/carModel');
 const provinces = require('./../utils/provinces')
-const createSpecification = require('./generateSpefications');
+const generateSpecifications = require('./generateSpefications');
 const createRegistrationCertificate = require('./generateRegistrationCertificates');
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
@@ -20,7 +20,7 @@ const createNumberPlate = () => {
     return `${region}${serialChar}${serialNum} - ${order}`;
 }
 const createType = () => {
-    const types = ['Sedan', 'Hatchback', 'Coupe', 'Convertible', 'SUV', 'Crossover', 'Minivan', 'Pickup truck', 'Sports car', 'Electric car', 'Hybrid car', 'Luxury car', 'Compact car', 'Station wagon', 'Off-road vehicle', 'Muscle car', 'Supercar', 'City car', 'Microcar', 'Classic car']
+    const types = ['Sedan', 'Hatchback', 'Coupe', 'SUV', 'Minivan', 'Bus', 'Pickup truck', 'Sports car', 'Electric car','Luxury car', 'Van'];
     return types[randomFunction.getRandomNumber(0, types.length - 1)];
 }
 const createBrand = () => {
@@ -47,10 +47,10 @@ const createColor = () => {
     return colors[randomFunction.getRandomNumber(0, colors.length - 1)];
 }
 const createManufacturedYear = () => {
-    return 2021 - Math.floor(Math.random() * 20);
+    return 2020 - Math.floor(Math.random() * 30);
 }
 const createManufacturedCountry = () => {
-    const countries = ['Japan', 'Korea', 'Thailand', 'China', 'USA', 'UK', 'Germany', 'Viet Nam', 'Italy'];
+    const countries = ['Nhật Bản', 'Hàn Quốc', 'Thái Lan', 'Trung Quốc', 'Mỹ', 'Anh', 'Đức', 'Việt Nam', 'Ý'];
     return countries[randomFunction.getRandomNumber(0, countries.length - 1)];
 }
 const createBoughtPlace = () => {
@@ -61,14 +61,17 @@ const createPurpose = () => {
     const purposes = ['personal', 'business'];
     return purposes[randomFunction.getRandomNumber(0, purposes.length - 1)];
 }
+const createSpecification = (carType) => {
+    return generateSpecifications.generateSpecificationForCarType(carType);
+}
 
 
-const createCar = (index, owner, manYear) => {
-
+const createCar = async (owner, manYear) => {
+    const type = createType();
     return {
         number_plate: createNumberPlate(),
         owner: owner,
-        type: createType(),
+        type: type,
         brand: createBrand(),
         model_code: createModelCode(),
         engine_number: createEngineNumber(),
@@ -78,18 +81,43 @@ const createCar = (index, owner, manYear) => {
         manufactured_country: createManufacturedCountry(),
         bought_place: createBoughtPlace(),
         purpose: createPurpose(),
-        specification: createSpecification(),
-        registration_certificate: createRegistrationCertificate(index, manYear)
+        specification: createSpecification(type),
+        registration_certificate: await createRegistrationCertificate(manYear)
+    }
+};
+const createRandomCar = async (owner, manYear) => {
+    const type = createType();
+    return {
+        number_plate: createNumberPlate(),
+        owner: owner,
+        type: type,
+        brand: createBrand(),
+        model_code: createModelCode(),
+        engine_number: createEngineNumber(),
+        chassis_number: createChassisNumber(),
+        color: createColor(),
+        manufactured_year: manYear,
+        manufactured_country: createManufacturedCountry(),
+        bought_place: createBoughtPlace(),
+        purpose: createPurpose(),
+        specification: generateSpecifications.createSpecification(type),
+        registration_certificate:await createRegistrationCertificate(manYear)
     }
 }
-const cars = [];
-const NUM_OF_CARS = 4000;
+
+const NUM_OF_CARS = 6500;
 const generateCar = async () => {
     const owners = await Owner.find()
         .select('_id');
-    for (let i = 0; i < NUM_OF_CARS; i++) {
+    for (let i = 3513; i < 4000; i++) {
         const year = createManufacturedYear();
-        cars.push(createCar(i, owners[i % owners.length]._id, year));
+        const car = await createCar(owners[i % owners.length]._id, year);
+        await Car.create(car);
+    }
+    for (let i = 4000; i < NUM_OF_CARS; i++) {
+        const year = createManufacturedYear();
+        const car = await createRandomCar(owners[i % owners.length]._id, year);
+        await Car.create(car);
     }
 }
 const database = process.env.DATABASE.replace(
@@ -111,7 +139,6 @@ mongoose
 const importer = async () => {
     try {
         await generateCar();
-        await Car.create(cars);
         console.log('data successfully loaded');
         process.exit(0);
     } catch (err) {
