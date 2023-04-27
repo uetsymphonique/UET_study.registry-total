@@ -1,7 +1,7 @@
 const randomFunction = require("./randomFunction");
 const mongoose = require('mongoose');
-const User = require('./../models/userModel');
-const RegistrationCentre = require('./../models/registrationCentreModel');
+const User = require('../models/userModel');
+const RegistrationCentre = require('../models/registrationCentreModel');
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const generateEmail = (role, index) => {

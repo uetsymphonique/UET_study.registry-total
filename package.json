@@ -2,13 +2,13 @@
   "name": "registry-total",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "start:dev": "SET NODE_ENV=development & nodemon --inspect index.js",
-    "start:prod": "SET NODE_ENV=production & SET PORT=3001 & nodemon --inspect index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "start:dev": "SET NODE_ENV=development & nodemon --inspect src/index.js",
+    "start:prod": "SET NODE_ENV=production & SET PORT=3001 & nodemon --inspect src/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -27,9 +27,11 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
     "morgan": "^1.10.0",
+    "netlify-lambda": "^2.0.16",
     "nodemailer": "^6.9.1",
     "pc-vn": "^1.0.1",
     "random-seed": "^0.3.0",
+    "serverless-http": "^3.2.0",
     "slugify": "^1.6.6",
     "validator": "^13.9.0",
     "xss-clean": "^0.1.1"

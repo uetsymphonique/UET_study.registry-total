@@ -5,7 +5,8 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-const compression = require('compression')
+const compression = require('compression');
+const functions = require('firebase-functions');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const registrationCentreRouter = require('./routes/registrationCentreRoutes');
@@ -68,3 +69,4 @@ app.all('*', (req, res, next) => {
 app.use(globalErrorHandler);
 
 module.exports = app;
+exports.api = functions.https.onRequest(app)

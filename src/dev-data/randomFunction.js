@@ -1,5 +1,5 @@
 const rand = require('random-seed').create();
-const provinces = require('./../utils/provinces');
+const provinces = require('../utils/provinces');
 const getRandomString = (length) => {
     const str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
     let randomString = '';

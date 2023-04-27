@@ -1,7 +1,7 @@
-const RegistrationCentre = require('./../models/registrationCentreModel');
-const APIFeatures = require('./../utils/apiFeatures');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const RegistrationCentre = require('../models/registrationCentreModel');
+const APIFeatures = require('../utils/apiFeatures');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.getAllCentres = catchAsync(async (req, res, next) => {
     const features = new APIFeatures(RegistrationCentre.find(), req.query)
