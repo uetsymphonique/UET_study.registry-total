@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const InspectionSchema = new Schema({
     inspection_number: {
         type: String,
-        required: true,
+        //required: true,
         //unique: true
     },
     expired_date: {
@@ -16,7 +16,6 @@ const InspectionSchema = new Schema({
     },
     firstTime: {
         type: Boolean,
-        required: true,
         default: true
     },
     specify: {
@@ -46,6 +45,13 @@ const InspectionSchema = new Schema({
         }
     }
 });
+// InspectionSchema.pre('save', async function(next){
+//     this.inspection_number = await Inspection.countDocuments({
+//         inspection_number: {
+//             $regex: `/^${this.inspected_date.getFullYear()}`, $options: 'i'
+//         }
+//     });
+// });
 
 InspectionSchema.pre('save', function (next){
     const str = this.specify.split('~');

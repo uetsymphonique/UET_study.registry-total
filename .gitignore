@@ -1,7 +1,0 @@
-/node_modules
-.history
-new.html
-.env
-
-# Local Netlify folder
-.netlify

@@ -5,10 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "start:dev": "SET NODE_ENV=development & nodemon --inspect src/index.js",
-    "start:prod": "SET NODE_ENV=production & SET PORT=3001 & nodemon --inspect src/index.js"
+    "dev": "node_modules/.bin/nodemon index.js",
+    "start:dev": "SET NODE_ENV=development & node_modules/.bin/nodemon --inspect src/index.js",
+    "start:prod": "SET NODE_ENV=production & SET PORT=3001 & node_modules/.bin/nodemon --inspect src/index.js"
   },
   "author": "",
   "license": "ISC",

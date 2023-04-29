@@ -109,7 +109,7 @@ const NUM_OF_CARS = 6500;
 const generateCar = async () => {
     const owners = await Owner.find()
         .select('_id');
-    for (let i = 3513; i < 4000; i++) {
+    for (let i = 0; i < 4000; i++) {
         const year = createManufacturedYear();
         const car = await createCar(owners[i % owners.length]._id, year);
         await Car.create(car);
@@ -161,6 +161,3 @@ if (process.argv[2] === '--import') {
     deleter();
 }
 console.log(process.argv);
-
-
-
