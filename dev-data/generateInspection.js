@@ -1,6 +1,6 @@
 const Inspection = require('../models/inspectionModel');
 const Inspect = require('../models/inspectModel');
-const randomFunction = require('server/src/dev-data/randomFunction');
+const randomFunction = require('server/dev-data/randomFunction');
 const Car = require('../models/carModel');
 const User = require('../models/userModel');
 const mongoose = require('mongoose');
