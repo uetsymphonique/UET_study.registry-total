@@ -4,6 +4,8 @@ const randomFunction = require('server/dev-data/randomFunction');
 const Car = require('../models/carModel');
 const User = require('../models/userModel');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config({path: './config.env'});
 
 
 const getSpecifyForCar = (car, recovered) => {
@@ -73,7 +75,10 @@ const inspects = async () => {
             inspection));
     }
 }
-
+const database = process.env.DATABASE.replace(
+    '<password>',
+    process.env.DATABASE_PASSWORD
+);
 mongoose
     .connect(database, {
         useNewUrlParser: true,
