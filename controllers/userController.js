@@ -1,17 +1,8 @@
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
-const User = require('../models/userModel');
-const ApiFeatures = require('../utils/apiFeatures');
-const filterObj = (obj, ...allowedFields) => {
-    const newObj = {};
-    Object.keys(obj)
-        .forEach((key) => {
-            if (allowedFields.includes(key)) {
-                newObj[key] = obj[key];
-            }
-        });
-    return newObj;
-}
+const AppError = require('./../utils/appError');
+const catchAsync = require('./../utils/catchAsync');
+const User = require('./../models/userModel');
+const ApiFeatures = require('./../utils/apiFeatures');
+const filterObj = require('./../utils/filterObj');
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     const features = new ApiFeatures(User.find({role: { $ne: 'admin'}}), req.query)
         .filter()

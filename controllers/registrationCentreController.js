@@ -1,4 +1,5 @@
 const RegistrationCentre = require('../models/registrationCentreModel');
+
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -54,7 +55,7 @@ exports.deleteCentre = catchAsync(async (req, res, next) => {
         });
 });
 
-exports.getCentreById = catchAsync(async (req, res, next) => {
+exports.getCentre = catchAsync(async (req, res, next) => {
     const centre = await RegistrationCentre.findById(req.params.id);
     if (!centre) {
         return next(new AppError('No centre found with this id', 404));
@@ -64,4 +65,7 @@ exports.getCentreById = catchAsync(async (req, res, next) => {
             status: 'success',
             data: {centre}
         })
+})
+exports.getAnalysisOfInspections = catchAsync(async (req, res, next) => {
+    //const
 })

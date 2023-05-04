@@ -6,8 +6,11 @@ router.route('/')
     .get(RegistrationCentreController.getAllCentres)
     .post(RegistrationCentreController.createCentre);
 router.route('/:id')
-    .get(RegistrationCentreController.getCentreById)
+    .get(RegistrationCentreController.getCentre)
     .patch(RegistrationCentreController.updateCentre)
     .delete(RegistrationCentreController.deleteCentre);
+
+
+
 
 module.exports = router;

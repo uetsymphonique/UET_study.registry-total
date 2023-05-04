@@ -10,7 +10,7 @@ const sendErrorDev = (err, res) => {
         });
 };
 const sendErrorProd = (err, res) => {
-    //Operarional, trusted error: send msg to client
+    //Operational, trusted error: send msg to client
     if (err.isOperational) {
         //console.log(err);
         res.status(err.statusCode)
