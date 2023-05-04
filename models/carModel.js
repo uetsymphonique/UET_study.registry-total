@@ -88,6 +88,10 @@ const CarSchema = new Schema({
     registration_certificate:{
         type: RegistrationCertification,
         required: true
+    },
+    recovered: {
+        type: Boolean,
+        default: false
     }
 });
 
