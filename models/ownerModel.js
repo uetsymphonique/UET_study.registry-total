@@ -38,5 +38,9 @@ const OwnerSchema = new Schema({
         default: 'individual'
     }
 });
+OwnerSchema.pre(/^find/, function (next) {
+    this.select('-__v');
+    next();
+});
 const Owner = mongoose.model('Owner', OwnerSchema);
 module.exports = Owner;

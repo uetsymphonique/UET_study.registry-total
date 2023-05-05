@@ -35,47 +35,48 @@ const CarSchema = new Schema({
     },
     owner: {
         type: Schema.Types.ObjectId,
-        ref: 'Owner'
+        ref: 'Owner',
+        required: true
     },
     type: {
         type: String,
-        required: true
+        //required: true
     },
     brand: {
         type: String,
-        required: true
+        //required: true
     },
     model_code: {
         type: String,
-        required: true
+        //required: true
     },
     engine_number: {
         type: String,
-        required: true
+        //required: true
     },
     chassis_number: {
         type: String,
-        required: true
+        //required: true
     },
     color: {
         type: String,
-        required: true
+        //required: true
     },
     manufactured_year: {
         type: String,
-        required: true
+        //required: true
     },
     manufactured_country: {
         type: String,
-        required: true
+        //required: true
     },
     bought_place: {
         type: String,
-        required: true
+        //required: true
     },
     purpose: {
         type: String,
-        required: true,
+        //required: true,
         enum: {
             values: ['personal', 'business'],
             message: 'Only personal or business purpose'
@@ -83,7 +84,6 @@ const CarSchema = new Schema({
     },
     specification: {
         type: Specification,
-        required: true
     },
     registration_certificate:{
         type: RegistrationCertification,

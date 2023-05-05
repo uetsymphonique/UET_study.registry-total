@@ -19,20 +19,10 @@ mongoose
         console.log('Database connected unsuccessfully!! ERROR: ' + err.message);
     });
 
-const mergeInspection = async () => {
-    const inspects = await Inspect.find();
-    for (let i = 0; i < inspects.length; i++) {
-        await Inspection.findByIdAndUpdate(inspects[i].inspection,{
-            car: inspects[i].car,
-            madeBy: inspects[i].staff
-        })
-    }
-}
 
-//mergeInspection();
+
 
 const query = async () => {
-    await mergeInspection();
     console.log('query done');
 }
 
