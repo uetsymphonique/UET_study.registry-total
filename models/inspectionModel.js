@@ -46,7 +46,7 @@ const InspectionSchema = new Schema({
             message: '{VALUE} has not been appeared in the database'
         }
     },
-    car:{
+    car: {
         type: Schema.Types.ObjectId,
         ref: 'Car',
         required: true
@@ -56,22 +56,26 @@ const InspectionSchema = new Schema({
         ref: 'User',
         required: true
     }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
 });
 
 /**
  * indicate the inspection number in sequence
  */
-InspectionSchema.pre('save', async function(next){
+InspectionSchema.pre('save', async function (next) {
     this.inspection_number = await Inspection.countDocuments({
         inspection_number: {
-            $regex: `/^${this.inspected_date.getFullYear()}`, $options: 'i'
+            $regex: `/^${this.inspected_date.getFullYear()}`,
+            $options: 'i'
         }
     });
 });
 /**
  * indicate the specification of the inspection
  */
-InspectionSchema.pre('save', async function(next){
+InspectionSchema.pre('save', async function (next) {
     this.specify = getSpecify(await Car.find({_id: this.car}));
 });
 const getSpecify = (car) => {
@@ -118,7 +122,7 @@ const getSpecify = (car) => {
 /**
  * indicate the expired date of the inspection
  */
-InspectionSchema.pre('save', function (next){
+InspectionSchema.pre('save', function (next) {
     const str = this.specify.split('~');
     const expiredTime = this.firstTime ? parseInt(str[1]) : parseInt(str[2]);
     const addMonths = (date, months) => {
@@ -139,5 +143,14 @@ InspectionSchema.pre('save', function (next){
     }
     next();
 });
+InspectionSchema.virtual('inspected_season')
+    .get(function () {
+        return Math.floor((this.inspected_date.getMonth() + 1) / 3) + 1;
+    })
+InspectionSchema.pre(/^find/, function (next) {
+    this.select('-__v');
+    next();
+});
+
 const Inspection = mongoose.model('Inspection', InspectionSchema);
 module.exports = Inspection;
