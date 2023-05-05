@@ -67,6 +67,10 @@ const RegistrationCentreSchema = new Schema({
         select: false,
     }
 });
+RegistrationCentreSchema.pre(/^find/, function (next) {
+    this.select('-__v');
+    next();
+});
 RegistrationCentreSchema.pre('save', function (next) {
     this.slug = slugify(formatVietnameseString(this.name), {lower: true});
     this.side = provinces.mappingProvinceToSide(this.address);
