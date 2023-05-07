@@ -1,5 +1,8 @@
-const Inspection = require('../models/inspectionModel');
-const Inspect = require('../models/inspectModel');
+const Inspection = require('./../models/inspectionModel');
+const Inspect = require('./../models/inspectModel');
+const RegistrationCentre = require('./../models/registrationCentreModel');
+const User = require('./../models/userModel');
+const Car = require('./../models/carModel');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
@@ -23,6 +26,12 @@ mongoose
 
 
 const query = async () => {
+    await Car.updateMany({},
+        {$unset: {
+                'specification._id': 1,
+                'registration_certificate._id': 1
+            }}
+    );
     console.log('query done');
 }
 

@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post('/signup', AuthController.signup);
 router.post('/createAccount',AuthController.protect, AuthController.restrictTo('admin'), AuthController.createAccount);
+router.post('/deleteAccount',AuthController.protect, AuthController.restrictTo('admin'), AuthController.deleteAccount);
 router.post('/login', AuthController.login);
 
 router.post('/forgotPassword', AuthController.forgotPassword);

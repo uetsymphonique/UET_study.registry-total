@@ -1,32 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const RegistrationCertification = new Schema({
-    registration_number: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    registration_date: {
-        type: Date,
-        required: true
-    }
-});
-const Specification = new Schema({
-    wheel_formula: String,
-    wheel_tread: String,
-    overall_dimension: String,
-    container_dimension: String,
-    length_base: String,
-    kerb_mass: String,
-    authorized_payload: String,
-    authorized_total_mass: String,
-    authorized_towed_mass: String,
-    permissible_carry: String,
-    fuel: String,
-    engine_displacement: String,
-    maximum_output_to_rpm_ratio: String,
-    number_of_tires_and_tire_size: String
-})
 const CarSchema = new Schema({
     number_plate: {
         type: String,
@@ -83,11 +56,31 @@ const CarSchema = new Schema({
         }
     },
     specification: {
-        type: Specification,
+        wheel_formula: String,
+        wheel_tread: String,
+        overall_dimension: String,
+        container_dimension: String,
+        length_base: String,
+        kerb_mass: String,
+        authorized_payload: String,
+        authorized_total_mass: String,
+        authorized_towed_mass: String,
+        permissible_carry: String,
+        fuel: String,
+        engine_displacement: String,
+        maximum_output_to_rpm_ratio: String,
+        number_of_tires_and_tire_size: String
     },
     registration_certificate:{
-        type: RegistrationCertification,
-        required: true
+        registration_number: {
+            type: String,
+            required: true,
+            unique: true
+        },
+        registration_date: {
+            type: Date,
+            required: true
+        }
     },
     recovered: {
         type: Boolean,
