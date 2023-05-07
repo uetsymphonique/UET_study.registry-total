@@ -2,7 +2,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const RegistrationCentre = require('./registrationCentreModel')
+const randomFunction = require('./../dev-data/randomFunction')
 const Schema = mongoose.Schema;
 
 const UserSchema= new Schema({
@@ -124,8 +124,8 @@ UserSchema.methods.changesPasswordAfter = function (JWTTimestamp) {
     return false;
 }
 UserSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto.randomBytes(32)
-        .toString('hex');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    // const resetToken = randomFunction.getRandomNumber(0,999999).toString().padStart(6, '0');
 
     this.passwordResetToken = crypto.createHash('sha256')
         .update(resetToken)

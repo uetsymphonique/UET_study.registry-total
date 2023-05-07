@@ -151,6 +151,10 @@ InspectionSchema.pre(/^find/, function (next) {
     this.select('-__v');
     next();
 });
+// InspectionSchema.pre('aggregate', function (next) {
+//     this.pipeline().unshift({})
+//     next();
+// })
 
 const Inspection = mongoose.model('Inspection', InspectionSchema);
 module.exports = Inspection;
