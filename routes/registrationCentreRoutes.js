@@ -10,7 +10,4 @@ router.route('/:id')
     .patch(RegistrationCentreController.updateCentre)
     .delete(RegistrationCentreController.deleteCentre);
 
-
-
-
 module.exports = router;

@@ -113,7 +113,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const resetUrl = `${resetToken}`;
     console.log(resetUrl);
     const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
-        Please click on the following link, or paste this into your browser to complete the process:\n\n
+        This is the reset-password code to complete the process:\n\n
         ${resetUrl}\n\n
         If you did not request this, please ignore this email and your password will remain unchanged.\n`;
     try {
@@ -137,6 +137,27 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     }
 
 });
+
+exports.checkResetToken = catchAsync(async (req,res, next) => {
+    const hashedToken = crypto.createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: {$gt: Date.now()}
+    });
+
+
+    // 2) If token has not expired, and there is user, set the new password
+    if (!user) {
+        return next(new AppError('Password reset token is invalid or has expired', 400));
+    }
+    res.status(200)
+        .json({
+            status: 'success',
+            message: 'This token is valid!!!'
+        });
+})
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
     // 1) Get user based on token
