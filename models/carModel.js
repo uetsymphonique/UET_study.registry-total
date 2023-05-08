@@ -85,6 +85,9 @@ const CarSchema = new Schema({
     recovered: {
         type: Boolean,
         default: false
+    },
+   bookedInspection_date: {
+        type: Date,
     }
 });
 
