@@ -1,11 +1,11 @@
 const randomFunction = require("./randomFunction");
-const fs = require('fs');
 const mongoose = require('mongoose');
-const Owner = require('../models/ownerModel');
 const Car = require('../models/carModel');
-const provinces = require('../utils/provinces')
-const generateSpecifications = require('./generateSpefications');
-const createRegistrationCertificate = require('./generateRegistrationCertificates');
+const provinces = require('../utils/provinces');
+const createSpecification = require('./generateSpefications');
+const createOwner = require('./generateOwners');
+const fs = require('fs');
+
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const createNumberPlate = () => {
@@ -17,10 +17,18 @@ const createNumberPlate = () => {
     let serialNum = serialNums[randomFunction.getRandomNumber(0, serialNums.length - 1)];
     let order = String(randomFunction.getRandomNumber(10000, 99999));
     order = order.slice(0, 3) + "." + order.slice(3, 5);
-    return `${region}${serialChar}${serialNum} - ${order}`;
+    return `${region}${serialChar}${serialNum}-${order}`;
+}
+const createRegistrationDate = (year) => {
+    if (year < 2009) year = 2009;
+    return new Date(randomFunction.createDate(`${year}-01-01`, "2021-12-31"));
+}
+const createRegistrationNumber = (date, index) => {
+    return `${date.getFullYear()}-${index.toString()
+        .padStart(6, '0')}`
 }
 const createType = () => {
-    const types = ['Sedan', 'Hatchback', 'Coupe', 'SUV', 'Minivan', 'Bus', 'Pickup truck', 'Sports car', 'Electric car','Luxury car', 'Van'];
+    const types = ['Sedan', 'Hatchback', 'Coupe', 'SUV', 'Minivan', 'Bus', 'Pickup truck', 'Sports car', 'Electric car', 'Luxury car', 'Van'];
     return types[randomFunction.getRandomNumber(0, types.length - 1)];
 }
 const createBrand = () => {
@@ -47,7 +55,7 @@ const createColor = () => {
     return colors[randomFunction.getRandomNumber(0, colors.length - 1)];
 }
 const createManufacturedYear = () => {
-    return 2020 - Math.floor(Math.random() * 30);
+    return 2020 - Math.floor(Math.random() * 15);
 }
 const createManufacturedCountry = () => {
     const countries = ['Nhật Bản', 'Hàn Quốc', 'Thái Lan', 'Trung Quốc', 'Mỹ', 'Anh', 'Đức', 'Việt Nam', 'Ý'];
@@ -61,65 +69,41 @@ const createPurpose = () => {
     const purposes = ['personal', 'business'];
     return purposes[randomFunction.getRandomNumber(0, purposes.length - 1)];
 }
-const createSpecification = (carType) => {
-    return generateSpecifications.generateSpecificationForCarType(carType);
+const createRecovered = () => {
+    const choices = [true, false];
+    return choices[randomFunction.getRandomNumber(0, choices.length - 1)];
 }
-
-
-const createCar = async (owner, manYear) => {
-    const type = createType();
+const createCar = (index) => {
+    const year = createManufacturedYear();
+    const date = createRegistrationDate(year);
+    const carType = createType();
     return {
-        number_plate: createNumberPlate(),
-        owner: owner,
-        type: type,
+        numberPlate: createNumberPlate(),
+        owner: createOwner(index),
+        registrationNumber: createRegistrationNumber(date, index),
+        registrationDate: date,
+        type: carType,
         brand: createBrand(),
-        model_code: createModelCode(),
-        engine_number: createEngineNumber(),
-        chassis_number: createChassisNumber(),
+        modelCode: createModelCode(),
+        engineNumber: createEngineNumber(),
+        chassisNumber: createChassisNumber(),
         color: createColor(),
-        manufactured_year: manYear,
-        manufactured_country: createManufacturedCountry(),
-        bought_place: createBoughtPlace(),
+        manufacturedYear: year,
+        manufacturedCountry: createManufacturedCountry(),
+        boughtPlace: createBoughtPlace(),
         purpose: createPurpose(),
-        specification: createSpecification(type),
-        registration_certificate: await createRegistrationCertificate(manYear)
-    }
-};
-const createRandomCar = async (owner, manYear) => {
-    const type = createType();
-    return {
-        number_plate: createNumberPlate(),
-        owner: owner,
-        type: type,
-        brand: createBrand(),
-        model_code: createModelCode(),
-        engine_number: createEngineNumber(),
-        chassis_number: createChassisNumber(),
-        color: createColor(),
-        manufactured_year: manYear,
-        manufactured_country: createManufacturedCountry(),
-        bought_place: createBoughtPlace(),
-        purpose: createPurpose(),
-        specification: generateSpecifications.createSpecification(type),
-        registration_certificate:await createRegistrationCertificate(manYear)
+        specification: createSpecification(carType),
+        recovered: createRecovered()
     }
 }
 
-const NUM_OF_CARS = 6500;
-const generateCar = async () => {
-    const owners = await Owner.find()
-        .select('_id');
-    for (let i = 0; i < 4000; i++) {
-        const year = createManufacturedYear();
-        const car = await createCar(owners[i % owners.length]._id, year);
-        await Car.create(car);
-    }
-    for (let i = 4000; i < NUM_OF_CARS; i++) {
-        const year = createManufacturedYear();
-        const car = await createRandomCar(owners[i % owners.length]._id, year);
-        await Car.create(car);
-    }
+const NUM_OF_CARS = 7000;
+const cars = [];
+for (let i = 0; i < NUM_OF_CARS; i++) {
+    cars.push(createCar(i));
 }
+// fs.writeFileSync(`${__dirname}/cars.json`, JSON.stringify(cars));
+
 const database = process.env.DATABASE.replace(
     '<password>',
     process.env.DATABASE_PASSWORD
@@ -138,7 +122,7 @@ mongoose
 
 const importer = async () => {
     try {
-        await generateCar();
+        await Car.create(cars)
         console.log('data successfully loaded');
         process.exit(0);
     } catch (err) {
