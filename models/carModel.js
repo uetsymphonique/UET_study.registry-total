@@ -71,24 +71,52 @@ const CarSchema = new Schema({
         maximum_output_to_rpm_ratio: String,
         number_of_tires_and_tire_size: String
     },
-    registration_certificate:{
-        registration_number: {
-            type: String,
-            required: true,
-            unique: true
-        },
-        registration_date: {
-            type: Date,
-            required: true
-        }
+    registration_certificate: {
+        type: String,
+        default: ''
+    },
+    registration_number: {
+        type: String,
+        // required: true,
+        // unique: true
+    },
+    registration_date: {
+        type: Date,
+        // required: true
     },
     recovered: {
         type: Boolean,
         default: false
     },
-   bookedInspection_date: {
+    bookedInspection_date: {
         type: Date,
     }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+});
+
+CarSchema.virtual('inspections', {
+    ref: 'Inspection',
+    foreignField: 'car',
+    localField: '_id'
+});
+
+CarSchema.pre('save', function(next) {
+    this.registration_centre = 'haha';
+    next();
+})
+
+CarSchema.pre(/^find/, function (next) {
+    this.select('-__v');
+    next();
+});
+
+CarSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'owner'
+    })
+    next();
 });
 
 const Car = mongoose.model('Car', CarSchema);
