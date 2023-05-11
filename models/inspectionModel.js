@@ -20,10 +20,10 @@ const InspectionSchema = new Schema({
     },
     firstTime: {
         type: Boolean,
-        default: true
     },
     specify: {
         type: String,
+        required: true,
         enum: {
             values: ['carry_people$lte:9-personal+manufacture$lte:7~36~24',
                 'carry_people$lte:9-personal+manufacture$gt:7and$lte:20~12~12',
@@ -69,28 +69,28 @@ const InspectionSchema = new Schema({
 /**
  * indicate the centre make inspection
  */
-// InspectionSchema.pre('save', async function (next) {
-//     const user = await User.findById(this.madeBy);
-//     this.centre = user.workFor;
-//     next();
-// })
+InspectionSchema.pre('save', async function (next) {
+    const user = await User.findById(this.madeBy);
+    this.centre = user.workFor;
+    next();
+})
 
 /**
  * indicate the inspection number in sequence
  */
-// InspectionSchema.pre('save', async function (next) {
-//     this.inspection_number = await Inspection.countDocuments({
-//         inspection_number: {
-//             $regex: `/^${this.inspected_date.getFullYear()}`,
-//             $options: 'i'
-//         }
-//     });
-// });
+InspectionSchema.pre('save', async function (next) {
+    this.inspectionNumber = await Inspection.countDocuments({
+        inspectionNumber: new RegExp(`/^${this.inspectionDate.getFullYear()}`)
+    });
+    next();
+});
 
 /**
- * indicate the expired date of the inspection
+ * indicate this is the first time or not and the expired date of the inspection
  */
-InspectionSchema.pre('save', function (next) {
+InspectionSchema.pre('save', async function (next) {
+    const user = await Inspection.findOne({car: this.car});
+    this.firstTime = !user;
     const str = this.specify.split('~');
     const expiredTime = this.firstTime ? parseInt(str[1]) : parseInt(str[2]);
     const addMonths = (date, months) => {
@@ -115,24 +115,7 @@ InspectionSchema.pre(/^find/, function (next) {
     this.select('-__v -id');
     next();
 });
-// InspectionSchema.pre(/^find/, function (next) {
-//     this.populate({
-//         path: 'madeBy',
-//         select: '-__v'
-//     })
-//         .populate({
-//             path: 'car',
-//             select: 'registration_certificate number_plate owner',
-//             populate: {
-//                 path: 'owner'
-//             }
-//         })
-//     next();
-// });
-// InspectionSchema.pre('aggregate', function (next) {
-//     this.pipeline().unshift({})
-//     next();
-// })
+
 
 const Inspection = mongoose.model('Inspection', InspectionSchema);
 module.exports = Inspection;

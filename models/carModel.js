@@ -245,7 +245,7 @@ const CarSchema = new Schema({
         type: Boolean,
         default: false
     },
-    bookedInspection_date: {
+    bookedInspectionDate: {
         type: Date,
     }
 }, {
@@ -259,18 +259,11 @@ CarSchema.virtual('inspections', {
     localField: '_id'
 });
 
-
 CarSchema.pre(/^find/, function (next) {
     this.select('-__v');
     next();
 });
 
-CarSchema.pre(/^find/, function (next) {
-    this.populate({
-        path: 'owner'
-    })
-    next();
-});
 
 CarSchema.methods.getSpecify = function () {
     let speType;

@@ -11,7 +11,7 @@ exports.setAdditionalParams = (req, res, next) => {
 };
 exports.setAdditionalPartsInBody = (req, res, next) => {
     if(!req.body.car) req.body.car = req.params.carId;
-    if(!req.body.registration_centre) req.body.registration_centre = req.params.centreId;
+    if(!req.body.centre) req.body.centre = req.params.centreId;
     next();
 }
 exports.getAllInspections = factory.getAll(Inspection)
@@ -24,10 +24,7 @@ exports.getInspection = factory.getOne(Inspection,
         }
     }, {
         path: 'car',
-        populate: {
-            path: 'owner',
-            select: '-id -_id'
-        }
+        select: '-id'
     }
 );
 exports.createInspection = factory.createOne(Inspection);
@@ -35,7 +32,6 @@ exports.makeInspection = catchAsync(async (req, res, next) => {
     const doc = await Inspection.create({
         car: req.body.car,
         madeBy: req.user._id,
-        registration_centre: req.user.madeBy.workFor
     });
     res.status(201)
         .json({

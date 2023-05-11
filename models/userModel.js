@@ -116,10 +116,6 @@ UserSchema.pre(/^find/, function (next) {
     this.find({active: {$ne: false}}).select('-__v');
     next();
 });
-// UserSchema.pre(/^find/, function (next) {
-//     this.populate('workFor','-__v -slug -side -area');
-//     next();
-// })
 UserSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
 };

@@ -74,7 +74,7 @@ exports.getAll = Model =>
         let filter = {};
         if (req.params.userId) filter.madeBy = req.params.userId;
         if (req.params.carId) filter.car = req.params.carId;
-        if (req.params.centreId) filter.registration_centre = req.params.centreId
+        if (req.params.centreId) filter.centre = req.params.centreId
         const features = new APIFeatures(Model.find(filter), req.query)
             .filter()
             .sort()
