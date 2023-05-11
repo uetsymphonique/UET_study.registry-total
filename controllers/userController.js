@@ -1,46 +1,39 @@
 const AppError = require('./../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
 const User = require('./../models/userModel');
-const ApiFeatures = require('./../utils/apiFeatures');
+const factory = require('./handleFactory')
 const filterObj = require('./../utils/filterObj');
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-    const features = new ApiFeatures(User.find({role: { $ne: 'admin'}}), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate();
-    const users = await features.query;
+const sendEmail = require('../utils/email');
 
-    // SEND RESPONSE
-    res.status(200)
-        .json({
-            status: 'success',
-            results: users.length,
-            data: {users}
-        });
-});
+
+exports.getAllUsers = factory.getAll(User);
+
 exports.getMe = catchAsync(async (req, res, next) => {
     // 1) Create error if user POSTs password data
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError('This route is not for password update', 400));
     }
     // 2) Get user document
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user.id)
+        .select('-password -passwordResetToken -passwordResetExpires')
+        .populate('workFor', '-__v -slug -side -area').populate({
+            path: 'inspections'
+        });
     res.status(200)
-       .json({
-            status:'success',
+        .json({
+            status: 'success',
             data: {
                 user
             }
         });
-})
+});
 exports.updateMe = catchAsync(async (req, res, next) => {
     // 1) Create error if user POSTs password data
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError('This route is not for password update', 400));
     }
     // 2) Update user document
-    const filteredBody = filterObj(req.body, 'name', 'email');
+    const filteredBody = filterObj(req.body,'email', 'phone', 'name', 'dateOfBirth');
     const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
         new: true,
         runValidators: true,
@@ -59,35 +52,93 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     res.status(204)
         .json({
             status: 'success',
-            message: 'User deleted successfully',
+            message: 'User inactive successfully',
             data: null
         });
 });
-exports.createUser = (req, res) => {
-    res.status(500)
-        .json({
-            status: 'error',
-            message: 'This route is not yet defined',
+exports.createAccount = catchAsync(async (req, res, next) => {
+    const message = `Your account has been created. Please login your account with your email address and password: ${req.body.password}`;
+    try {
+        await sendEmail({
+            email: req.body.email,
+            subject: 'Your account has been created',
+            text: message
         });
-};
-exports.getUser = (req, res) => {
-    res.status(500)
+    } catch (err) {
+        console.log(err);
+        return next(new AppError('Email could not be sent', 500));
+    }
+    const newUser = await User.create(req.body);
+    res.status(200)
         .json({
-            status: 'error',
-            message: 'This route is not yet defined',
+            status: 'success',
+            message: 'An email has been sent to the user. Account has been created successfully!',
+            data: {
+                data: newUser
+            }
         });
-};
-exports.deleteUser = (req, res) => {
-    res.status(500)
+});
+
+exports.inactivateAccount = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        return next(new AppError('No user found with this id', 404));
+    }
+    const message = `Your account has been inactivated. Please contact your administrator for more information`;
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Your account has been inactivated',
+            text: message
+        });
+    } catch (err) {
+        console.log(err);
+        return next(new AppError('Email could not be sent', 500));
+    }
+    user.active = false;
+    await user.save({
+        validateBeforeSave: false
+    });
+    res.status(200)
         .json({
-            status: 'error',
-            message: 'This route is not yet defined',
+            status: 'success',
+            message: 'An email has been sent to the user. Account has been inactivated successfully!'
         });
-};
-exports.updateUser = (req, res) => {
-    res.status(500)
+});
+
+exports.activateAccount = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        return next(new AppError('No user found with this id', 404));
+    }
+    const message = `Your account has been activated. Please contact your administrator for more information`;
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Your account has been activated',
+            text: message
+        });
+    } catch (err) {
+        console.log(err);
+        return next(new AppError('Email could not be sent', 500));
+    }
+    user.active = false;
+    await user.save({
+        validateBeforeSave: false
+    });
+    res.status(200)
         .json({
-            status: 'error',
-            message: 'This route is not yet defined',
+            status: 'success',
+            message: 'An email has been sent to the user. Account has been inactivated successfully!'
         });
-};
+});
+
+exports.createUser = factory.createOne(User);
+exports.getUser = factory.getOne(User, {
+    path: 'workFor',
+    select: 'name address'
+},{
+    path: 'inspections'
+});
+exports.deleteUser = factory.deleteOne(User);
+exports.updateUser = factory.updateOne(User);

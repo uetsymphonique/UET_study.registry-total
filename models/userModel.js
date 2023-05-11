@@ -85,7 +85,17 @@ const UserSchema= new Schema({
         default: true,
         select: false
     },
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
 });
+
+UserSchema.virtual('inspections', {
+    ref: 'Inspection',
+    foreignField: 'madeBy',
+    localField: '_id'
+});
+
 UserSchema.pre('save', async function (next) {
     //only run this function if password was actually modified
     if (!this.isModified('password')) return next();
@@ -106,10 +116,10 @@ UserSchema.pre(/^find/, function (next) {
     this.find({active: {$ne: false}}).select('-__v');
     next();
 });
-UserSchema.pre(/^find/, function (next) {
-    this.populate('workFor','-__v');
-    next();
-})
+// UserSchema.pre(/^find/, function (next) {
+//     this.populate('workFor','-__v -slug -side -area');
+//     next();
+// })
 UserSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
 };
@@ -124,7 +134,7 @@ UserSchema.methods.changesPasswordAfter = function (JWTTimestamp) {
     return false;
 }
 UserSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto.randomBytes(8).toString('hex');
+    const resetToken = crypto.randomBytes(4).toString('hex');
     // const resetToken = randomFunction.getRandomNumber(0,999999).toString().padStart(6, '0');
 
     this.passwordResetToken = crypto.createHash('sha256')
