@@ -5,13 +5,16 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const cors = require("cors");
 const compression = require("compression");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const registrationCentreRouter = require("./routes/registrationCentreRoutes");
 const userRouter = require("./routes/userRoutes");
 const carRouter = require("./routes/carRoutes");
-const inspectionRouter = require("./routes/inspectionRoutes")
+const inspectionRouter = require("./routes/inspectionRoutes");
+const analyticRouter = require("./routes/analyticRoutes");
+
 
 const app = express();
 // app.set('views', path.join(__dirname, 'views'));
@@ -22,11 +25,7 @@ const app = express();
 //set security http headers
 app.use(helmet());
 
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "*");
-    next();
-});
+app.use(cors());
 
 //development logging
 if (process.env.NODE_ENV.trim() === "development") {
@@ -67,6 +66,7 @@ app.use("/api/v1/registrationCentres", registrationCentreRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/cars", carRouter);
 app.use("/api/v1/inspections", inspectionRouter);
+app.use("/api/v1/analytics", analyticRouter);
 
 
 app.all("*", (req, res, next) => {
