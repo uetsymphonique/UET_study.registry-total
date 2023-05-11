@@ -49,7 +49,7 @@ exports.login = catchAsync(async (req, res, next) => {
     }
     //check legit
     const user = await User.findOne({email})
-        .select('+password');
+        .select('+password').populate('workFor', '-__v -slug -side -area');
 
     if (!user || !(await user.correctPassword(password, user.password))) {
         return next(new AppError('Incorrect email or password', 401));
@@ -202,35 +202,4 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     createSendToken(user, 200, res);
 });
 
-exports.createAccount = catchAsync(async (req, res, next) => {
-    const newUser = await User.create(req.body);
-    const message = `Your account has been created. Please login your account with your email address and password: ${req.body.password}`;
-    try {
-        await sendEmail({
-            email: newUser.email,
-            subject: 'Your account has been created',
-            text: message
-        });
-        console.log(newUser.email);
-        res.status(200)
-            .json({
-                status: 'success',
-                message: 'An email has been sent to the user!!'
-            });
-    } catch (err) {
-        console.log(err);
-        return next(new AppError('Email could not be sent', 500));
-    }
-});
 
-exports.deleteAccount = catchAsync(async (req, res, next) => {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-        return next(new AppError('No user found with this id', 404));
-    }
-    res.status(200)
-        .json({
-            status: 'success',
-            data: {}
-        });
-});
