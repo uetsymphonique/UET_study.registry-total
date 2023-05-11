@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const provinces = require('../utils/provinces')
 const slugify = require('slugify');
+const validator = require('validator');
 const formatVietnameseString = require('../utils/formatVienameseString');
 const RegistrationCentreSchema = new Schema({
     name: {
@@ -53,10 +54,7 @@ const RegistrationCentreSchema = new Schema({
         type: String,
         required: true,
         validate: {
-            validator: function (value) {
-                // Email
-                return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value));
-            },
+            validator: validator.isEmail,
             message: props => `${props.value} is not a valid email address`
         },
         unique: true
@@ -66,6 +64,20 @@ const RegistrationCentreSchema = new Schema({
         default: Date.now(),
         select: false,
     }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+});
+
+RegistrationCentreSchema.virtual('employees', {
+    ref: 'User',
+    foreignField: 'workFor',
+    localField: '_id',
+});
+RegistrationCentreSchema.virtual('inspections', {
+    ref: 'Inspection',
+    foreignField: 'registration_centre',
+    localField: '_id',
 });
 RegistrationCentreSchema.pre(/^find/, function (next) {
     this.select('-__v');
