@@ -30,7 +30,7 @@ class APIFeatures_aggregate {
         let queryString = JSON.stringify(queryObject);
         //console.log(queryString);
         queryString = queryString.replace(
-            /\b(gte|gt|lte|lt|toInt)\b/g,
+            /\b(gte|gt|lte|lt)\b/g,
             (match) => `$${match}`
         );
         queryString = queryString.replace(/"(\d+)"/g, "$1");
@@ -71,7 +71,6 @@ class APIFeatures_aggregate {
 
 
     limitFields() {
-        console.log('hahahah');
         // 3) Limit
         if (this.queryString.fields) {
             const fields = this.queryString.fields.split(',');
