@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Car = require('./carModel');
+const Owner = require('./ownerModel')
 
 const InspectionSchema = new Schema({
     inspection_number: {
@@ -55,29 +56,35 @@ const InspectionSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    registration_centre: {
+        type: Schema.Types.ObjectId,
+        ref: 'RegistrationCentre',
     }
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
 });
 
+
+
 /**
  * indicate the inspection number in sequence
  */
-InspectionSchema.pre('save', async function (next) {
-    this.inspection_number = await Inspection.countDocuments({
-        inspection_number: {
-            $regex: `/^${this.inspected_date.getFullYear()}`,
-            $options: 'i'
-        }
-    });
-});
+// InspectionSchema.pre('save', async function (next) {
+//     this.inspection_number = await Inspection.countDocuments({
+//         inspection_number: {
+//             $regex: `/^${this.inspected_date.getFullYear()}`,
+//             $options: 'i'
+//         }
+//     });
+// });
 /**
  * indicate the specification of the inspection
  */
-InspectionSchema.pre('save', async function (next) {
-    this.specify = getSpecify(await Car.find({_id: this.car}));
-});
+// InspectionSchema.pre('save', async function (next) {
+//     this.specify = getSpecify(await Car.find({_id: this.car}));
+// });
 const getSpecify = (car) => {
     let speType;
     if (car.type === 'Minivan' || car.type === 'Pickup truck' || car.type === 'Van') {
@@ -122,35 +129,49 @@ const getSpecify = (car) => {
 /**
  * indicate the expired date of the inspection
  */
-InspectionSchema.pre('save', function (next) {
-    const str = this.specify.split('~');
-    const expiredTime = this.firstTime ? parseInt(str[1]) : parseInt(str[2]);
-    const addMonths = (date, months) => {
-        const newDate = new Date(date);
-        const currMonth = newDate.getMonth();
-
-        newDate.setMonth(currMonth + months);
-
-        // handle edge case where adding months crosses a year boundary
-        if (newDate.getMonth() !== (currMonth + months) % 12) {
-            newDate.setDate(0); // set to last day of previous month
-        }
-
-        return newDate;
-    }
-    if (expiredTime) {
-        this.expired_date = addMonths(this.inspected_date, expiredTime);
-    }
-    next();
-});
-InspectionSchema.virtual('inspected_season')
-    .get(function () {
-        return Math.floor((this.inspected_date.getMonth() + 1) / 3) + 1;
-    })
+// InspectionSchema.pre('save', function (next) {
+//     const str = this.specify.split('~');
+//     const expiredTime = this.firstTime ? parseInt(str[1]) : parseInt(str[2]);
+//     const addMonths = (date, months) => {
+//         const newDate = new Date(date);
+//         const currMonth = newDate.getMonth();
+//
+//         newDate.setMonth(currMonth + months);
+//
+//         // handle edge case where adding months crosses a year boundary
+//         if (newDate.getMonth() !== (currMonth + months) % 12) {
+//             newDate.setDate(0); // set to last day of previous month
+//         }
+//
+//         return newDate;
+//     }
+//     if (expiredTime) {
+//         this.expired_date = addMonths(this.inspected_date, expiredTime);
+//     }
+//     next();
+// });
+// InspectionSchema.virtual('inspected_season')
+//     .get(function () {
+//         return Math.floor((this.inspected_date.getMonth() + 1) / 3) + 1;
+//     })
 InspectionSchema.pre(/^find/, function (next) {
-    this.select('-__v');
+    this.select('-__v -id');
     next();
 });
+// InspectionSchema.pre(/^find/, function (next) {
+//     this.populate({
+//         path: 'madeBy',
+//         select: '-__v'
+//     })
+//         .populate({
+//             path: 'car',
+//             select: 'registration_certificate number_plate owner',
+//             populate: {
+//                 path: 'owner'
+//             }
+//         })
+//     next();
+// });
 // InspectionSchema.pre('aggregate', function (next) {
 //     this.pipeline().unshift({})
 //     next();

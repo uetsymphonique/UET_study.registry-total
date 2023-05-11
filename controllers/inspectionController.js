@@ -1,53 +1,53 @@
 const AppError = require('./../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
 const Inspection = require('./../models/inspectionModel');
-const ApiFeatures = require('./../utils/apiFeatures');
+const APIFeatures = require('./../utils/apiFeatures');
+const factory = require('./handleFactory');
 const filterObj = require('./../utils/filterObj');
-const ApiFeatures_aggregate = require('./../utils/apiFeatures_aggregate')
-
-exports.getAllInspections = catchAsync(async (req, res, next) => {
-    const features = new ApiFeatures(Inspection.find()
-        .populate('madeBy', '-__v')
-        .populate('car', '-__v'), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate();
-    const inspections = await features.query;
-
-    // SEND RESPONSE
-    res.status(200)
-        .json({
-            status: 'success',
-            results: inspections.length,
-            data: {inspections}
-        });
-});
-exports.getInspection = catchAsync(async (req, res, next) => {
-    const inspection = await Inspection.findById(req.params.id);
-    if (!inspection) {
-        return next(new AppError('No inspection found with this id', 404));
+const APIFeatures_aggregate = require('./../utils/apiFeatures_aggregate');
+exports.setAdditionalParams = (req, res, next) => {
+    if(!req.params.userId) req.params.userId = req.user._id;
+    next();
+};
+exports.setAdditionalPartsInBody = (req, res, next) => {
+    if(!req.body.car) req.body.car = req.params.carId;
+    if(!req.body.registration_centre) req.body.registration_centre = req.params.centreId;
+    next();
+}
+exports.getAllInspections = factory.getAll(Inspection)
+exports.getInspection = factory.getOne(Inspection,
+    {
+        path: 'madeBy',
+        populate: {
+            path: 'workFor',
+            select: '-side -slug -area -id -address -_id'
+        }
+    }, {
+        path: 'car',
+        populate: {
+            path: 'owner',
+            select: '-id -_id'
+        }
     }
-    res.status(200)
-        .json({
-            status: 'success',
-            data: {inspection}
-        })
-});
+);
+exports.createInspection = factory.createOne(Inspection);
 exports.makeInspection = catchAsync(async (req, res, next) => {
-    const inspection = await Inspection.create({
-        car: req.params.car,
+    const doc = await Inspection.create({
+        car: req.body.car,
         madeBy: req.user._id,
+        registration_centre: req.user.madeBy.workFor
     });
     res.status(201)
         .json({
             status: 'success',
-            data: {inspection}
+            data: {
+                data: doc
+            }
         });
 });
 
 exports.getSeasonAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
-    const features = new ApiFeatures_aggregate(Inspection.aggregate([
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupMadeBy,
         ...pipeline_getAnalyticsForOwnCentreById(req.user.workFor._id),
         ...pipeline_getAnalyticsPerYear(req.params.year * 1),
@@ -67,7 +67,7 @@ exports.getSeasonAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => 
         });
 });
 exports.getMonthAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
-    const features = new ApiFeatures_aggregate(Inspection.aggregate([
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupMadeBy,
         ...pipeline_getAnalyticsForOwnCentreById(req.user.workFor._id),
         ...pipeline_getAnalyticsPerYear(req.params.year * 1),
@@ -87,7 +87,7 @@ exports.getMonthAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
         });
 });
 exports.getYearAnalyticsByOwnId = catchAsync(async (req, res, next) => {
-    const features = new ApiFeatures_aggregate(Inspection.aggregate([
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupMadeBy,
         ...pipeline_getAnalyticsForOwnCentreById(req.user.workFor._id),
     ]), req.query).prefilter(prefilterFields)
@@ -114,7 +114,7 @@ exports.getMonthlyPredictedAnalyticsPerYearByOwnId = catchAsync(async (req, res,
 
 
 exports.getMonthlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
-    const features = new ApiFeatures_aggregate(Inspection.aggregate([
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupMadeBy,
         ...pipeline_lookupWorkFor,
         ...pipeline_getAnalyticsPerYear(req.params.year * 1)
@@ -136,7 +136,7 @@ exports.getMonthlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
 });
 exports.getSeasonlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
     // console.log(`seasonly inspected in year ${req.params.year}`);
-    const features = new ApiFeatures_aggregate(Inspection.aggregate([
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupMadeBy,
         ...pipeline_lookupWorkFor,
         ...pipeline_getAnalyticsPerYear(req.params.year * 1)
@@ -157,7 +157,7 @@ exports.getSeasonlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
         });
 });
 exports.getYearlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
-    const features = new ApiFeatures_aggregate(Inspection.aggregate([
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupMadeBy,
         ...pipeline_lookupWorkFor,
     ]), req.query).prefilter(prefilterFields)
@@ -186,27 +186,9 @@ exports.getMonthlyPredictedInspectationsOfCentres = catchAsync(async (req, res, 
 });
 
 
-exports.deleteInspection = (req, res) => {
-    res.status(500)
-        .json({
-            status: 'error',
-            message: 'This route is not yet defined',
-        });
-};
-exports.updateInspection = (req, res) => {
-    res.status(500)
-        .json({
-            status: 'error',
-            message: 'This route is not yet defined',
-        });
-};
-exports.createInspection = (req, res) => {
-    res.status(500)
-        .json({
-            status: 'error',
-            message: 'This route is not yet defined',
-        });
-};
+exports.deleteInspection = factory.deleteOne(Inspection);
+exports.updateInspection = factory.updateOne(Inspection);
+
 
 const prefilterFields = ['registration_name', 'registration_side', 'registration_area', 'registration_address'];
 const pipeline_lookupMadeBy = [
