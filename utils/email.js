@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-
+const AppError = require('./appError')
 
 const sendEmail = async options => {
     // 1) Create a transporter
@@ -21,13 +21,7 @@ const sendEmail = async options => {
         //html:
     };
     // 3) Actually send the email
-    transporter.sendMail(mailOptions, (err, result) => {
-        if (err) {
-            //console.log(err);
-        } else {
-            //console.log('Email sent:'+ result.message);
-        }
-    });
+    await transporter.sendMail(mailOptions);
 }
 
 module.exports = sendEmail;
