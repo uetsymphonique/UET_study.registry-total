@@ -6,6 +6,7 @@ const CarSchema = new Schema({
         type: String,
         required: true,
         unique: true,
+        trim: true,
         validate: {
             validator: function (value) {
                 return (/^\d{2}[a-zA-Z]\d-\d{3}\.\d{2}$/.test(value));
@@ -270,6 +271,49 @@ CarSchema.pre(/^find/, function (next) {
     })
     next();
 });
+
+CarSchema.methods.getSpecify = function () {
+    let speType;
+    if (this.type === 'Minivan' || this.type === 'Pickup truck' || this.type === 'Van') {
+        speType = 'truck_specializedCar'
+    } else {
+        speType = 'carry_people';
+    }
+    let speCarry = '';
+    if (speType === 'carry_people') {
+        speCarry = (this.permissibleCarry > 9) ? '$gt:9' : '$lte:9';
+    }
+    let spePurpose = '';
+    if (speCarry === '$lte:9') {
+        spePurpose = `-${this.purpose}`;
+        // console.log(spePurpose);
+    }
+    let speManufactureAndTimePeriod = '';
+    if (speType === 'carry_people') {
+        if (speCarry === '$lte:9') {
+            if (spePurpose === '-personal') {
+                if (this.manufacturedYear <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~36~24';
+                else if (this.manufacturedYear <= 20) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:20~12~12';
+                else speManufactureAndTimePeriod = '+manufacture$gt:20~6~6';
+            } else {
+                if (this.recovered) speManufactureAndTimePeriod = '+recovered~12~6';
+                else if (this.manufacturedYear <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12'
+                else speManufactureAndTimePeriod = '+manufacture$gt:5~6~6';
+            }
+        } else {
+            if (this.recovered) speManufactureAndTimePeriod = '+recovered~12~6';
+            else if (this.manufacturedYear <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12';
+            else if (this.manufacturedYear <= 14) speManufactureAndTimePeriod = '+manufacture$gt:5and$lte:14~6~6';
+            else speManufactureAndTimePeriod = '+manufacture$gt:14~3~3';
+        }
+    } else {
+        if (this.recovered) speManufactureAndTimePeriod = '+recovered~12~6';
+        else if (this.manufacturedYear <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~24~12';
+        else if (this.manufacturedYear <= 19) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:19~6~6';
+        else speManufactureAndTimePeriod = '+manufacture$gt:19~3~3';
+    }
+    return `${speType}${speCarry}${spePurpose}${speManufactureAndTimePeriod}`;
+}
 
 const Car = mongoose.model('Car', CarSchema);
 module.exports = Car;

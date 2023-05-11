@@ -1,80 +1,48 @@
 const Inspection = require('../models/inspectionModel');
-const Inspect = require('../models/inspectModel');
-const randomFunction = require('server/dev-data/randomFunction');
+const randomFunction = require('./randomFunction');
 const Car = require('../models/carModel');
 const User = require('../models/userModel');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
-
-
-const getSpecifyForCar = (car, recovered) => {
-    let speType;
-    if (car.type === 'Minivan' || car.type === 'Pickup truck' || car.type === 'Van') {
-        speType = 'truck_specializedCar'
+const createInspectionDate = (date) => {
+    const startDate = new Date(date);
+    if (startDate.getFullYear() < 2014){
+        startDate.setFullYear(2014);
+    }
+    if (startDate.getFullYear() < 2021){
+        return new Date(randomFunction.createDate(startDate, `${startDate.getFullYear()+1}-12-31`));
     } else {
-        speType = 'carry_people';
-    }
-    let speCarry = '';
-    if (speType === 'carry_people') {
-        speCarry = (car.specification.permissible_carry > 9) ? '$gt:9' : '$lte:9';
-    }
-    let spePurpose = '';
-    if (speCarry === '$lte:9') {
-        spePurpose = `-${car.purpose}`;
-    }
-    let speManufactureAndTimePeriod = '';
-    if (speType === 'carry_people') {
-        if (speCarry === '$lte:9') {
-            if (spePurpose === '-personal') {
-                if (car.manufactured_year <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~36~24';
-                else if (car.manufactured_year <= 20) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:20~12~12';
-                else speManufactureAndTimePeriod = '+manufacture$gt:20~6~6';
-            } else {
-                if (recovered) speManufactureAndTimePeriod = '+recovered~12~6';
-                else if (car.manufactured_year <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12'
-                else speManufactureAndTimePeriod = '+manufacture$gt:5~6~6';
-            }
-        } else {
-            if (recovered) speManufactureAndTimePeriod = '+recovered~12~6';
-            else if (car.manufactured_year <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12';
-            else if (car.manufactured_year <= 14) speManufactureAndTimePeriod = '+manufacture$gt:5and$lte:14~6~6';
-            else speManufactureAndTimePeriod = '+manufacture$gt:14~3~3';
-        }
-    } else {
-        if (recovered) speManufactureAndTimePeriod = '+recovered~12~6';
-        else if (car.manufactured_year <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~24~12';
-        else if (car.manufactured_year <= 19) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:19~6~6';
-        else speManufactureAndTimePeriod = '+manufacture$gt:19~3~3';
-    }
-    return `${speType}${speCarry}${spePurpose}${speManufactureAndTimePeriod}`;
-}
-const createInspection = async (car, date) => {
-    return {
-        inspected_date: date,
-        specify: getSpecifyForCar(car),
-        firstTime: (!await Inspect.findOne({car: car._id}))
+        return new Date(randomFunction.createDate(startDate, `${startDate.getFullYear()}-12-31`));
     }
 }
-const makeInspection = (car, staff, inspection) => {
+const createInspectionNumber = (inspectionDate, index) => {
+    return `${inspectionDate.getFullYear()}${index.toString().padStart(6, '0')}`;
+}
+
+const createInspection = (car, user, index) => {
+    const date = createInspectionDate(car.registrationDate);
     return {
+        inspectionNumber:createInspectionNumber(date,index),
+        inspectionDate: date,
         car: car._id,
-        staff: staff._id,
-        inspection: inspection._id
+        madeBy: user._id,
+        specify: car.getSpecify(),
+        centre: user.workFor
     }
 }
 
-const inspects = async () => {
+const inspections = [];
+const NUM_OF_INSPECTIONS = 7000;
+const generate = async () => {
     const cars = await Car.find();
-    const staffs = await User.find({role: 'staff'});
-    for (let i = 0; i < cars.length; i++) {
-        const inspection = await Inspection.create(await createInspection(cars[i],
-            randomFunction.createDate(cars[i].registration_certificate.registration_date, '2021-12-31')));
-        await Inspect.create(makeInspection(cars[i],
-            staffs[randomFunction.getRandomNumber(0, staffs.length - 1)],
-            inspection));
+    const users = await User.find({role: 'staff'});
+    for (let i = 0; i < NUM_OF_INSPECTIONS; i++){
+        inspections.push(createInspection(cars[i],users[randomFunction.getRandomNumber(0, users.length - 1)],i));
     }
 }
+
+
 const database = process.env.DATABASE.replace(
     '<password>',
     process.env.DATABASE_PASSWORD
@@ -93,7 +61,8 @@ mongoose
 
 const importer = async () => {
     try {
-        await inspects();
+        await generate();
+        await Inspection.create(inspections);
         console.log('data successfully loaded');
         process.exit(0);
     } catch (err) {
@@ -102,7 +71,6 @@ const importer = async () => {
 };
 const deleter = async () => {
     try {
-        await Inspect.deleteMany();
         await Inspection.deleteMany();
         console.log('data successfully deleted!');
         process.exit(0);
