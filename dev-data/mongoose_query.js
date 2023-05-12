@@ -1,5 +1,4 @@
 const Inspection = require('./../models/inspectionModel');
-const Inspect = require('./../models/inspectModel');
 const RegistrationCentre = require('./../models/registrationCentreModel');
 const User = require('./../models/userModel');
 const Car = require('./../models/carModel');
@@ -23,16 +22,23 @@ mongoose
     });
 
 
-
-
 const query = async () => {
-    await Car.updateMany({},
-        {$unset: {
-                'specification._id': 1,
-                'registration_certificate._id': 1
-            }}
-    );
+    for (let i = 2009; i < 2022; i++) {
+        let cars = await Car.find({
+            registrationNumber: new RegExp(`${i}`)
+        }).sort({
+            registrationDate: 1
+        });
+        for (let j = 0; j < cars.length; j++) {
+            cars[j].registrationNumber = `${i}-${j.toString().padStart(6, '0')}`;
+            await cars[j].save({
+                validateBeforeSave: false,
+            });
+        }
+    }
+}
+const run = async () => {
+    await query();
     console.log('query done');
 }
-
-query();
+run();

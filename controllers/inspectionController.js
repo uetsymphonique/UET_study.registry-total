@@ -5,13 +5,17 @@ const APIFeatures = require('./../utils/apiFeatures');
 const factory = require('./handleFactory');
 const filterObj = require('./../utils/filterObj');
 const APIFeatures_aggregate = require('./../utils/apiFeatures_aggregate');
+const mongoose = require('mongoose');
+
+const Schema = mongoose.Schema;
 exports.setAdditionalParams = (req, res, next) => {
-    if(!req.params.userId) req.params.userId = req.user._id;
+    if (!req.params.userId) req.params.userId = req.user._id;
+    if (!req.params.centreId) req.params.centreId = req.user.workFor;
     next();
 };
 exports.setAdditionalPartsInBody = (req, res, next) => {
-    if(!req.body.car) req.body.car = req.params.carId;
-    if(!req.body.centre) req.body.centre = req.params.centreId;
+    if (!req.body.car) req.body.car = req.params.carId;
+    if (!req.body.centre) req.body.centre = req.params.centreId;
     next();
 }
 exports.getAllInspections = factory.getAll(Inspection)
@@ -42,10 +46,9 @@ exports.makeInspection = catchAsync(async (req, res, next) => {
         });
 });
 
-exports.getSeasonAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
+exports.seasonStatsInYearOfCentre = catchAsync(async (req, res, next) => {
     const features = new APIFeatures_aggregate(Inspection.aggregate([
-        ...pipeline_lookupMadeBy,
-        ...pipeline_getAnalyticsForOwnCentreById(req.user.workFor._id),
+        ...pipeline_matchCentreById(req.params.centreId),
         ...pipeline_getAnalyticsPerYear(req.params.year * 1),
     ]), req.query).prefilter(prefilterFields)
         .push(...pipeline_getSeasonAnalytics)
@@ -53,19 +56,18 @@ exports.getSeasonAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => 
         .sort()
         .limitFields()
         .paginate();
-    const analytics = await features.query;
+    const data = await features.query;
     res.status(200)
         .json({
             status: 'success',
             data: {
-                analytics
+                data
             },
         });
 });
-exports.getMonthAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
+exports.monthStatsInYearOfCentre = catchAsync(async (req, res, next) => {
     const features = new APIFeatures_aggregate(Inspection.aggregate([
-        ...pipeline_lookupMadeBy,
-        ...pipeline_getAnalyticsForOwnCentreById(req.user.workFor._id),
+        ...pipeline_matchCentreById(req.params.centreId),
         ...pipeline_getAnalyticsPerYear(req.params.year * 1),
     ]), req.query).prefilter(prefilterFields)
         .push(...pipeline_getMonthAnalytics)
@@ -73,19 +75,19 @@ exports.getMonthAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
         .sort()
         .limitFields()
         .paginate();
-    const analytics = await features.query;
+    console.log(features.query.pipeline());
+    const data = await features.query;
     res.status(200)
         .json({
             status: 'success',
             data: {
-                analytics
+                data
             },
         });
 });
-exports.getYearAnalyticsByOwnId = catchAsync(async (req, res, next) => {
+exports.yearStatsOfCentre = catchAsync(async (req, res, next) => {
     const features = new APIFeatures_aggregate(Inspection.aggregate([
-        ...pipeline_lookupMadeBy,
-        ...pipeline_getAnalyticsForOwnCentreById(req.user.workFor._id),
+        ...pipeline_matchCentreById(req.params.centreId),
     ]), req.query).prefilter(prefilterFields)
         .push(...pipeline_getYearAnalytics)
         .filter(prefilterFields)
@@ -101,18 +103,17 @@ exports.getYearAnalyticsByOwnId = catchAsync(async (req, res, next) => {
             },
         });
 });
-exports.getMonthlyExpiredAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
+exports.monthExpiredStatsInYearOfCentre = catchAsync(async (req, res, next) => {
     console.log(`monthly expired of centre ${req.user.workFor.name}`);
 })
-exports.getMonthlyPredictedAnalyticsPerYearByOwnId = catchAsync(async (req, res, next) => {
+exports.monthPredictedStatsInYearOfCentre = catchAsync(async (req, res, next) => {
     console.log(`monthly predicted of centre ${req.user.workFor.name}`);
 })
 
 
-exports.getMonthlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
+exports.monthStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
     const features = new APIFeatures_aggregate(Inspection.aggregate([
-        ...pipeline_lookupMadeBy,
-        ...pipeline_lookupWorkFor,
+        ...pipeline_lookupCentre,
         ...pipeline_getAnalyticsPerYear(req.params.year * 1)
     ]), req.query).prefilter(prefilterFields)
         .push(...pipeline_getMonthAnalytics)
@@ -130,11 +131,10 @@ exports.getMonthlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
             },
         });
 });
-exports.getSeasonlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
+exports.seasonStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
     // console.log(`seasonly inspected in year ${req.params.year}`);
     const features = new APIFeatures_aggregate(Inspection.aggregate([
-        ...pipeline_lookupMadeBy,
-        ...pipeline_lookupWorkFor,
+        ...pipeline_lookupCentre,
         ...pipeline_getAnalyticsPerYear(req.params.year * 1)
     ]), req.query).prefilter(prefilterFields)
         .push(...pipeline_getSeasonAnalytics)
@@ -152,10 +152,9 @@ exports.getSeasonlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
             },
         });
 });
-exports.getYearlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
+exports.yearStatsOfAllCentres = catchAsync(async (req, res, next) => {
     const features = new APIFeatures_aggregate(Inspection.aggregate([
-        ...pipeline_lookupMadeBy,
-        ...pipeline_lookupWorkFor,
+        ...pipeline_lookupCentre,
     ]), req.query).prefilter(prefilterFields)
         .push(
             ...pipeline_getYearAnalytics
@@ -174,6 +173,32 @@ exports.getYearlyInspectionsOfCentres = catchAsync(async (req, res, next) => {
             },
         });
 });
+exports.centreStatsOfAllCentres = catchAsync(async (req, res, next) => {
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
+        ...pipeline_lookupCentre,
+        {
+            $addFields: {
+                inspectionSeason: {$add: [1, {$floor: {$divide: [{$subtract: [{$month: '$inspectionDate'}, 1]}, 3]}}]},
+                inspectionMonth: {$month: '$inspectionDate'},
+                inspectionYear: {$year: '$inspectionDate'}
+            }
+        }
+    ]), req.query).prefilter(prefilterFields)
+        .push(...pipeline_getCentreAnalytics)
+        .filter(prefilterFields)
+        .sort()
+        .limitFields()
+        .paginate();
+    // console.log(JSON.stringify(features.query.pipeline()));
+    const data = await features.query;
+    res.status(200)
+        .json({
+            status: 'success',
+            data: {
+                data
+            },
+        });
+})
 exports.getMonthlyExpiredInspectationsOfCentres = catchAsync(async (req, res, next) => {
     console.log(`monthly expired of centre ${req.user.workFor.name}`);
 })
@@ -186,7 +211,7 @@ exports.deleteInspection = factory.deleteOne(Inspection);
 exports.updateInspection = factory.updateOne(Inspection);
 
 
-const prefilterFields = ['registration_name', 'registration_side', 'registration_area', 'registration_address'];
+const prefilterFields = ['centreName', 'centreSide', 'centreArea', 'centreAddress', 'inspectionYear', 'inspectionSeason', 'inspectionMonth'];
 const pipeline_lookupMadeBy = [
     {
         $lookup: {
@@ -198,32 +223,36 @@ const pipeline_lookupMadeBy = [
     },
     {$unwind: '$user'},
 ]
-const pipeline_lookupWorkFor = [
+const pipeline_lookupCentre = [
     {
         $lookup: {
             from: 'registrationcentres',
-            localField: 'user.workFor',
+            localField: 'centre',
             foreignField: '_id',
-            as: 'registration_centre'
+            as: 'registrationCentre'
         }
-    }, {$unwind: '$registration_centre'},
+    }, {$unwind: '$registrationCentre'},
     {
         $addFields: {
-            registration_name: '$registration_centre.name',
-            registration_side: '$registration_centre.side',
-            registration_area: '$registration_centre.area',
-            registration_address: '$registration_centre.address'
+            centreName: '$registrationCentre.name',
+            centreSide: '$registrationCentre.side',
+            centreArea: '$registrationCentre.area',
+            centreAddress: '$registrationCentre.address'
+        }
+    }, {
+        $project: {
+            registrationCentre: 0
         }
     }
 ]
-const pipeline_getAnalyticsForOwnCentreById = (id) => [
-    {$match: {'user.workFor': id}}
+const pipeline_matchCentreById = (id) => [
+    {$match: {'centre': new mongoose.Types.ObjectId(id)}},
 ];
 const pipeline_getAnalyticsPerYear = (year) => [
-    {$unwind: '$inspected_date'},
+    {$unwind: '$inspectionDate'},
     {
         $match: {
-            inspected_date: {
+            inspectionDate: {
                 $gte: new Date(`${year}-01-01`),
                 $lte: new Date(`${year}-12-31`)
             }
@@ -233,36 +262,48 @@ const pipeline_getAnalyticsPerYear = (year) => [
 const pipeline_getSeasonAnalytics = [
     {
         $addFields: {
-            inspected_season: {$add: [1, {$floor: {$divide: [{$subtract: [{$month: '$inspected_date'}, 1]}, 3]}}]}
+            inspectionSeason: {$add: [1, {$floor: {$divide: [{$subtract: [{$month: '$inspectionDate'}, 1]}, 3]}}]}
         }
     },
     {
         $group: {
-            _id: '$inspected_season',
-            numOfInspection: {$sum: 1},
+            _id: '$inspectionSeason',
+            numOfInspections: {$sum: 1},
             //inspections: {$push: '$inspection_number'},
         },
     },
     {$addFields: {season: '$_id'}},
     {$project: {_id: 0}},
-    {$sort: {season: 1}}
 ];
+const pipeline_getCentreAnalytics = [
+    {
+        $group: {
+            _id: '$centreName',
+            numOfInspections: {$sum: 1},
+        }
+    }, {
+        $addFields: {
+            centre: '$_id'
+        }
+    }, {
+        $project: {_id: 0}
+    }
+]
 const pipeline_getMonthAnalytics = [
     {
         $group: {
-            _id: {$month: '$inspected_date'},
+            _id: {$month: '$inspectionDate'},
             numOfInspection: {$sum: 1},
             //inspections: {$push: '$inspection_number'},
         },
     },
     {$addFields: {month: '$_id'}},
     {$project: {_id: 0}},
-    {$sort: {month: 1}}
 ];
 const pipeline_getYearAnalytics = [
     {
         $group: {
-            _id: {$year: '$inspected_date'},
+            _id: {$year: '$inspectionDate'},
             numOfInspection: {$sum: 1},
             //inspections: {$push: '$inspection_number'},
         }
@@ -274,13 +315,4 @@ const pipeline_getYearAnalytics = [
         }
     },
     {$project: {_id: 0}},
-    // {
-    //     $match: {
-    //         numOfInspection: {
-    //             $gte: 3,
-    //             // $gte: { $convert: { input: '3', to: "int" } },
-    //         }
-    //     }
-    // }
-    //{$sort: {year: 1}}
 ];

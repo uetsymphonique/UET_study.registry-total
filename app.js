@@ -13,7 +13,7 @@ const registrationCentreRouter = require("./routes/registrationCentreRoutes");
 const userRouter = require("./routes/userRoutes");
 const carRouter = require("./routes/carRoutes");
 const inspectionRouter = require("./routes/inspectionRoutes");
-const analyticRouter = require("./routes/analyticRoutes");
+const testRouter = require("./routes/testRoutes");
 
 
 const app = express();
@@ -66,7 +66,7 @@ app.use("/api/v1/registrationCentres", registrationCentreRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/cars", carRouter);
 app.use("/api/v1/inspections", inspectionRouter);
-app.use("/api/v1/analytics", analyticRouter);
+app.use("/api/v1/tests", testRouter);
 
 
 app.all("*", (req, res, next) => {

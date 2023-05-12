@@ -1,3 +1,5 @@
+const {filter} = require('compression');
+
 class APIFeatures_aggregate {
     constructor(query, queryString) {
         this.query = query;
@@ -12,10 +14,14 @@ class APIFeatures_aggregate {
                 prefilterObject[field] = queryObject[field];
             }
         });
-        this.query.pipeline()
-            .push({
-                $match: prefilterObject
-            });
+        let queryString = JSON.stringify(prefilterObject);
+        //console.log(queryString);
+        queryString = queryString.replace(
+            /\b(gte|gt|lte|lt)\b/g,
+            (match) => `$${match}`
+        );
+        queryString = queryString.replace(/"(\d+)"/g, "$1");
+        this.query.match(JSON.parse(queryString));
         return this;
     }
     filter(prefilterFields) {
@@ -35,10 +41,11 @@ class APIFeatures_aggregate {
         );
         queryString = queryString.replace(/"(\d+)"/g, "$1");
         //console.log(queryString);
-        this.query.pipeline()
-            .push({
-                $match: JSON.parse(queryString)
-            });
+        // this.query.pipeline()
+        //     .push({
+        //         $match: JSON.parse(queryString)
+        //     });
+        this.query.match(JSON.parse(queryString));
         //console.log(JSON.stringify(this.query.pipeline()));
         return this;
     }
@@ -52,52 +59,33 @@ class APIFeatures_aggregate {
     sort() {
         // 2) Sorting
         if (this.queryString.sort) {
-            const sorts = this.queryString.sort.split(',');
-            //console.log(sorts);
-            let sortObject = {};
-            sorts.forEach(sort => {
-                sortObject[sort.replace('-', '')
-                    .toString()] = (sort.startsWith('-')) ? -1 : 1;
-            })
-            this.query.pipeline()
-                .push({$sort: sortObject})
+            const sortBy = this.queryString.sort.split(',').join(' ');
+            //console.log(sortBy);
+            this.query = this.query.sort(sortBy);
         } else {
-            this.query.pipeline()
-                .push({$sort: {createdAt: -1}})
+            this.query = this.query.sort('-createdAt');
         }
-        //console.log(this.query.pipeline());
         return this;
+        //console.log(this.query.pipeline());
     }
 
 
     limitFields() {
-        // 3) Limit
         if (this.queryString.fields) {
-            const fields = this.queryString.fields.split(',');
-            let projectObject = {};
-            fields.forEach(field => {
-                projectObject[field.replace('-', '')
-                    .toString()] = (field.startsWith('-')) ? 0 : 1;
-            })
-            this.query.pipeline()
-                .push({$project: projectObject})
+            const fields = this.queryString.fields.split(',').join(' ');
+            this.query = this.query.project(fields);
         } else {
-            this.query.pipeline()
-                .push({$project: {__v: 0}})
+            this.query = this.query.project('-__v'); // exclude __v
         }
-        //console.log(this.query.pipeline());
+        // console.log(this.query.pipeline());
         return this;
     }
 
     paginate() {
-        //4) Pagination
         const page = this.queryString.page * 1 || 1;
         const limit = this.queryString.limit * 1 || 100;
         const skip = (page - 1) * limit;
-        this.query.pipeline()
-            .push(
-                {$skip: skip}, {$limit: limit}
-            )
+        this.query = this.query.skip(skip).limit(limit);
         return this;
     }
 }
