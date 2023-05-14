@@ -94,12 +94,12 @@ exports.yearStatsOfCentre = catchAsync(async (req, res, next) => {
         .sort()
         .limitFields()
         .paginate();
-    const analytics = await features.query;
+    const data = await features.query;
     res.status(200)
         .json({
             status: 'success',
             data: {
-                analytics
+                data
             },
         });
 });
@@ -122,12 +122,12 @@ exports.monthStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
         .limitFields()
         .paginate();
     //console.log(JSON.stringify(features.query));
-    const analytics = await features.query;
+    const data = await features.query;
     res.status(200)
         .json({
             status: 'success',
             data: {
-                analytics
+                data
             },
         });
 });
@@ -143,12 +143,12 @@ exports.seasonStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
         .limitFields()
         .paginate();
     //console.log(JSON.stringify(features.query));
-    const analytics = await features.query;
+    const data= await features.query;
     res.status(200)
         .json({
             status: 'success',
             data: {
-                analytics
+                data
             },
         });
 });
@@ -164,12 +164,12 @@ exports.yearStatsOfAllCentres = catchAsync(async (req, res, next) => {
         .limitFields()
         .paginate();
     //console.log(JSON.stringify(features.query));
-    const analytics = await features.query;
+    const data= await features.query;
     res.status(200)
         .json({
             status: 'success',
             data: {
-                analytics
+                data
             },
         });
 });
@@ -268,7 +268,7 @@ const pipeline_getSeasonAnalytics = [
     {
         $group: {
             _id: '$inspectionSeason',
-            numOfInspections: {$sum: 1},
+            count: {$sum: 1},
             //inspections: {$push: '$inspection_number'},
         },
     },
@@ -279,7 +279,7 @@ const pipeline_getCentreAnalytics = [
     {
         $group: {
             _id: '$centreName',
-            numOfInspections: {$sum: 1},
+            count: {$sum: 1},
         }
     }, {
         $addFields: {
@@ -293,7 +293,7 @@ const pipeline_getMonthAnalytics = [
     {
         $group: {
             _id: {$month: '$inspectionDate'},
-            numOfInspection: {$sum: 1},
+            count: {$sum: 1},
             //inspections: {$push: '$inspection_number'},
         },
     },
@@ -304,7 +304,7 @@ const pipeline_getYearAnalytics = [
     {
         $group: {
             _id: {$year: '$inspectionDate'},
-            numOfInspection: {$sum: 1},
+            count: {$sum: 1},
             //inspections: {$push: '$inspection_number'},
         }
     },

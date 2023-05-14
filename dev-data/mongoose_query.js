@@ -23,20 +23,34 @@ mongoose
 
 
 const query = async () => {
-    for (let i = 2009; i < 2022; i++) {
-        let cars = await Car.find({
-            registrationNumber: new RegExp(`${i}`)
+    // for (let i = 2009; i < 2022; i++) {
+    //     let cars = await Car.find({
+    //         registrationNumber: new RegExp(`${i}`)
+    //     }).sort({
+    //         registrationDate: 1
+    //     });
+    //     for (let j = 0; j < cars.length; j++) {
+    //         cars[j].registrationNumber = `${i}-${j.toString().padStart(6, '0')}`;
+    //         await cars[j].save({
+    //             validateBeforeSave: false,
+    //         });
+    //     }
+    // }
+    for (let i = 2019; i < 2023; i++) {
+        let inspections = await Inspection.find({
+            inspectionNumber: new RegExp(`${i}`)
         }).sort({
-            registrationDate: 1
+            inspectionDate: 1
         });
-        for (let j = 0; j < cars.length; j++) {
-            cars[j].registrationNumber = `${i}-${j.toString().padStart(6, '0')}`;
-            await cars[j].save({
+        for (let j = 0; j < inspections.length; j++) {
+            inspections[j].inspectionNumber = `${i}-${j.toString().padStart(6, '0')}`;
+            await inspections[j].save({
                 validateBeforeSave: false,
             });
         }
     }
 }
+
 const run = async () => {
     await query();
     console.log('query done');

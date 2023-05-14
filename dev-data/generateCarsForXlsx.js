@@ -1,13 +1,9 @@
-const randomFunction = require("./randomFunction");
-const mongoose = require('mongoose');
-const Car = require('../models/carModel');
+const randomFunction = require('./randomFunction');
 const provinces = require('../utils/provinces');
-const createSpecification = require('./generateSpefications');
-const createOwner = require('./generateOwners');
 const fs = require('fs');
-
-const dotenv = require('dotenv');
-dotenv.config({path: './config.env'});
+const xlsx = require('xlsx');
+const createOwner = require('./generateOwners');
+const createSpecification = require('./generateSpefications');
 const createNumberPlate = () => {
     const regions = ["14", "15", "16", "17", "18", "19", "20", "21", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38"];
     const serialNums = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -55,7 +51,7 @@ const createColor = () => {
     return colors[randomFunction.getRandomNumber(0, colors.length - 1)];
 }
 const createManufacturedYear = () => {
-    return 2020 - Math.floor(Math.random() * 15);
+    return 2022 - Math.floor(Math.random() * 15);
 }
 const createManufacturedCountry = () => {
     const countries = ['Nhật Bản', 'Hàn Quốc', 'Thái Lan', 'Trung Quốc', 'Mỹ', 'Anh', 'Đức', 'Việt Nam', 'Ý'];
@@ -73,76 +69,53 @@ const createRecovered = () => {
     const choices = [true, false];
     return choices[randomFunction.getRandomNumber(0, choices.length - 1)];
 }
+
 const createCar = (index) => {
-    const year = createManufacturedYear();
-    const date = createRegistrationDate(year);
     const carType = createType();
     return {
         numberPlate: createNumberPlate(),
         owner: createOwner(index),
-        registrationNumber: createRegistrationNumber(date, index),
-        registrationDate: date,
+        registrationDate: randomFunction.createDate('2022-01-01', '2022-12-31'),
         type: carType,
         brand: createBrand(),
         modelCode: createModelCode(),
         engineNumber: createEngineNumber(),
         chassisNumber: createChassisNumber(),
         color: createColor(),
-        manufacturedYear: year,
+        manufacturedYear: createManufacturedYear(),
         manufacturedCountry: createManufacturedCountry(),
         boughtPlace: createBoughtPlace(),
         purpose: createPurpose(),
         specification: createSpecification(carType),
         recovered: createRecovered()
     }
-}
+};
 
-const NUM_OF_CARS = 7000;
 const cars = [];
-for (let i = 0; i < NUM_OF_CARS; i++) {
+
+for (let i = 7000; i < 9000; i++) {
     cars.push(createCar(i));
 }
-// fs.writeFileSync(`${__dirname}/cars.json`, JSON.stringify(cars));
 
-const database = process.env.DATABASE.replace(
-    '<password>',
-    process.env.DATABASE_PASSWORD
-);
-mongoose
-    .connect(database, {
-        useNewUrlParser: true,
-    })
-    .then((conn) => {
-        //console.log(conn.connections);
-        console.log('Database connected successfully!!');
-    })
-    .catch((err) => {
-        console.log('Database connected unsuccessfully!! ERROR: ' + err.message);
-    });
-
-const importer = async () => {
-    try {
-        await Car.create(cars)
-        console.log('data successfully loaded');
-        process.exit(0);
-    } catch (err) {
-        console.log(err.message);
-    }
-};
-const deleter = async () => {
-    try {
-        await Car.deleteMany();
-        console.log('data successfully deleted!');
-        process.exit(0);
-    } catch (error) {
-        console.log(error.message);
-    }
+const flattenObject = (obj, prefix = '') => {
+    return Object.keys(obj).reduce((acc, key) => {
+        const propKey = prefix ? `${prefix}.${key}` : key;
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+            Object.assign(acc, flattenObject(obj[key], propKey));
+        } else {
+            acc[propKey] = obj[key];
+        }
+        return acc;
+    }, {});
 };
 
-if (process.argv[2] === '--import') {
-    importer();
-} else if (process.argv[2] === '--delete') {
-    deleter();
-}
-console.log(process.argv);
+const flattenedData = cars.map(obj => flattenObject(obj));
+const headers = Object.keys(flattenedData[0]);
 
+const worksheet = xlsx.utils.json_to_sheet(flattenedData, { header: headers });
+const workbook = xlsx.utils.book_new();
+xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+const xlsxData = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+fs.writeFileSync('data.xlsx', xlsxData);

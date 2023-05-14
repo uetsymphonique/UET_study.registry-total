@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const Schema = mongoose.Schema;
+const Inspection = require('./inspectionModel');
 const CarSchema = new Schema({
     numberPlate: {
         type: String,
@@ -49,7 +50,7 @@ const CarSchema = new Schema({
             unique: true,
             trim: true
         },
-        role:{
+        role: {
             type: String,
             enum: ['individual', 'organization'],
             default: 'individual'
@@ -258,14 +259,21 @@ CarSchema.virtual('inspections', {
     foreignField: 'car',
     localField: '_id'
 });
-
+// CarSchema.methods.expiredInspectionDate = async function () {
+//     const inspection = await Inspection.find({car: this._id}).sort('expiredDate').limit(1);
+//     return inspection.expiredDate;
+// }
+// CarSchema.virtual('expiredInspectionDate').get(async function () {
+//     const inspection = await Inspection.find({car: this._id}).sort('-expiredDate').limit(1);
+//     return inspection;
+// })
 CarSchema.pre(/^find/, function (next) {
     this.select('-__v');
     next();
 });
 
 
-CarSchema.methods.getSpecify = function () {
+CarSchema.methods.getSpecify = function (year) {
     let speType;
     if (this.type === 'Minivan' || this.type === 'Pickup truck' || this.type === 'Van') {
         speType = 'truck_specializedCar'
@@ -285,24 +293,24 @@ CarSchema.methods.getSpecify = function () {
     if (speType === 'carry_people') {
         if (speCarry === '$lte:9') {
             if (spePurpose === '-personal') {
-                if (this.manufacturedYear <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~36~24';
-                else if (this.manufacturedYear <= 20) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:20~12~12';
+                if (year - this.manufacturedYear <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~36~24';
+                else if (year - this.manufacturedYear <= 20) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:20~12~12';
                 else speManufactureAndTimePeriod = '+manufacture$gt:20~6~6';
             } else {
                 if (this.recovered) speManufactureAndTimePeriod = '+recovered~12~6';
-                else if (this.manufacturedYear <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12'
+                else if (year - this.manufacturedYear <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12';
                 else speManufactureAndTimePeriod = '+manufacture$gt:5~6~6';
             }
         } else {
             if (this.recovered) speManufactureAndTimePeriod = '+recovered~12~6';
-            else if (this.manufacturedYear <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12';
-            else if (this.manufacturedYear <= 14) speManufactureAndTimePeriod = '+manufacture$gt:5and$lte:14~6~6';
+            else if (year - this.manufacturedYear <= 5) speManufactureAndTimePeriod = '+manufacture$lte:5~24~12';
+            else if (year - this.manufacturedYear <= 14) speManufactureAndTimePeriod = '+manufacture$gt:5and$lte:14~6~6';
             else speManufactureAndTimePeriod = '+manufacture$gt:14~3~3';
         }
     } else {
         if (this.recovered) speManufactureAndTimePeriod = '+recovered~12~6';
-        else if (this.manufacturedYear <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~24~12';
-        else if (this.manufacturedYear <= 19) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:19~6~6';
+        else if (year - this.manufacturedYear <= 7) speManufactureAndTimePeriod = '+manufacture$lte:7~24~12';
+        else if (year - this.manufacturedYear <= 19) speManufactureAndTimePeriod = '+manufacture$gt:7and$lte:19~6~6';
         else speManufactureAndTimePeriod = '+manufacture$gt:19~3~3';
     }
     return `${speType}${speCarry}${spePurpose}${speManufactureAndTimePeriod}`;

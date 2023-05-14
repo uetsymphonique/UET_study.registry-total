@@ -8,7 +8,7 @@ const InspectionSchema = new Schema({
     inspectionNumber: {
         type: String,
         required: true,
-        unique: true,
+        // unique: true,
         trim: true
     },
     expiredDate: {
@@ -69,48 +69,48 @@ const InspectionSchema = new Schema({
 /**
  * indicate the centre make inspection
  */
-InspectionSchema.pre('save', async function (next) {
-    const user = await User.findById(this.madeBy);
-    this.centre = user.workFor;
-    next();
-})
+// InspectionSchema.pre('save', async function (next) {
+//     const user = await User.findById(this.madeBy);
+//     this.centre = user.workFor;
+//     next();
+// })
 
 /**
  * indicate the inspection number in sequence
  */
-InspectionSchema.pre('save', async function (next) {
-    this.inspectionNumber = await Inspection.countDocuments({
-        inspectionNumber: new RegExp(`/^${this.inspectionDate.getFullYear()}`)
-    });
-    next();
-});
+// InspectionSchema.pre('save', async function (next) {
+//     this.inspectionNumber = await Inspection.countDocuments({
+//         inspectionNumber: new RegExp(`/^${this.inspectionDate.getFullYear()}`)
+//     });
+//     next();
+// });
 
 /**
  * indicate this is the first time or not and the expired date of the inspection
  */
-InspectionSchema.pre('save', async function (next) {
-    const user = await Inspection.findOne({car: this.car});
-    this.firstTime = !user;
-    const str = this.specify.split('~');
-    const expiredTime = this.firstTime ? parseInt(str[1]) : parseInt(str[2]);
-    const addMonths = (date, months) => {
-        const newDate = new Date(date);
-        const currMonth = newDate.getMonth();
-
-        newDate.setMonth(currMonth + months);
-
-        // handle edge case where adding months crosses a year boundary
-        if (newDate.getMonth() !== (currMonth + months) % 12) {
-            newDate.setDate(0); // set to last day of previous month
-        }
-
-        return newDate;
-    }
-    if (expiredTime) {
-        this.expiredDate = addMonths(this.inspectionDate, expiredTime);
-    }
-    next();
-});
+// InspectionSchema.pre('save', async function (next) {
+//     const inspection = await Inspection.findOne({car: this.car});
+//     this.firstTime = !inspection;
+//     const str = this.specify.split('~');
+//     const expiredTime = this.firstTime ? parseInt(str[1]) : parseInt(str[2]);
+//     const addMonths = (date, months) => {
+//         const newDate = new Date(date);
+//         const currMonth = newDate.getMonth();
+//
+//         newDate.setMonth(currMonth + months);
+//
+//         // handle edge case where adding months crosses a year boundary
+//         if (newDate.getMonth() !== (currMonth + months) % 12) {
+//             newDate.setDate(0); // set to last day of previous month
+//         }
+//
+//         return newDate;
+//     }
+//     if (expiredTime) {
+//         this.expiredDate = addMonths(this.inspectionDate, expiredTime);
+//     }
+//     next();
+// });
 InspectionSchema.pre(/^find/, function (next) {
     this.select('-__v -id');
     next();
