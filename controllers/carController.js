@@ -20,15 +20,14 @@ exports.updateCar = factory.deleteOne(Car);
 exports.upload = catchAsync(async (req, res, next) => {
     if (!req.file.filename) {
         return next(new AppError('No file!', 400));
+    } else {
+        const data = await Car.create(xlsxToJson(req.file.path));
+        res.status(201)
+            .json({
+                status: 'success',
+                data
+            })
     }
-    const data = await Car.create(xlsxToJson(req.file.path))
-    res.status(201)
-        .json({
-            status: 'success',
-            data: {
-                data: data
-            }
-        });
 })
 
 exports.expiredDateOfCar = catchAsync(async (req, res, next) => {
