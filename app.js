@@ -22,6 +22,12 @@ const app = express();
 app.use(helmet());
 
 app.use(cors());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "*");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+})
 
 //development logging
 if (process.env.NODE_ENV.trim() === "development") {
@@ -54,9 +60,6 @@ app.use(express.static(`${__dirname}/public`));
 app.use(compression());
 //test middleware
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "");
-    res.header("Access-Control-Allow-Methods", "");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     req.requestTime = Date.now();
     //console.log(req.headers);
     next();
