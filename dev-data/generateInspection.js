@@ -27,7 +27,7 @@ const createInspection = (car, user, index) => {
         inspectionDate: date,
         car: car._id,
         madeBy: user._id,
-        specify: car.getSpecify(),
+        specify: car.getSpecify(date.getFullYear()),
         centre: user.workFor
     }
 }
