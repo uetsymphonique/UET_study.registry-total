@@ -51,7 +51,7 @@ const createColor = () => {
     return colors[randomFunction.getRandomNumber(0, colors.length - 1)];
 }
 const createManufacturedYear = () => {
-    return 2022 - Math.floor(Math.random() * 15);
+    return 2023 - Math.floor(Math.random() * 15);
 }
 const createManufacturedCountry = () => {
     const countries = ['Nhật Bản', 'Hàn Quốc', 'Thái Lan', 'Trung Quốc', 'Mỹ', 'Anh', 'Đức', 'Việt Nam', 'Ý'];
@@ -75,7 +75,7 @@ const createCar = (index) => {
     return {
         numberPlate: createNumberPlate(),
         owner: createOwner(index),
-        registrationDate: randomFunction.createDate('2022-01-01', '2022-12-31'),
+        registrationDate: randomFunction.createDate('2023-03-01', '2023-04-30'),
         type: carType,
         brand: createBrand(),
         modelCode: createModelCode(),
@@ -93,7 +93,7 @@ const createCar = (index) => {
 
 const cars = [];
 
-for (let i = 7000; i < 9000; i++) {
+for (let i = 9400; i < 9500; i++) {
     cars.push(createCar(i));
 }
 
@@ -118,4 +118,4 @@ xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
 const xlsxData = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
 
-fs.writeFileSync('data.xlsx', xlsxData);
+fs.writeFileSync(`${__dirname}/data5.xlsx`, xlsxData);
