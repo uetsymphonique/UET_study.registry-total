@@ -37,7 +37,7 @@ const getProvinceNames = () => {
     return ret;
 }
 let provinces = getProvinceNames();
-console.log(provinces);
+// console.log(provinces);
 
 let centres = [];
 centres.push(createRegistrationCentres(true));

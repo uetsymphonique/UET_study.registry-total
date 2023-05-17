@@ -111,7 +111,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     // 3) Send email with reset token
     // const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
     const resetUrl = `${resetToken}`;
-    console.log(resetUrl);
+    // console.log(resetUrl);
     const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         This is the reset-password code to complete the process:\n\n
         ${resetUrl}\n\n

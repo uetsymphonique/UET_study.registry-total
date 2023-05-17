@@ -7,7 +7,6 @@ const filterObj = require('./../utils/filterObj');
 const APIFeatures_aggregate = require('./../utils/apiFeatures_aggregate');
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
 exports.setAdditionalParams = (req, res, next) => {
     if (!req.params.userId) req.params.userId = req.user._id;
     if (!req.params.centreId) req.params.centreId = req.user.workFor;
@@ -60,6 +59,7 @@ exports.seasonStatsInYearOfCentre = catchAsync(async (req, res, next) => {
     res.status(200)
         .json({
             status: 'success',
+            results: data.length,
             data: {
                 data
             },
@@ -75,11 +75,12 @@ exports.monthStatsInYearOfCentre = catchAsync(async (req, res, next) => {
         .sort()
         .limitFields()
         .paginate();
-    console.log(features.query.pipeline());
+    // console.log(features.query.pipeline());
     const data = await features.query;
     res.status(200)
         .json({
             status: 'success',
+            results: data.length,
             data: {
                 data
             },
@@ -98,16 +99,33 @@ exports.yearStatsOfCentre = catchAsync(async (req, res, next) => {
     res.status(200)
         .json({
             status: 'success',
+            results: data.length,
             data: {
                 data
             },
         });
 });
 exports.monthExpiredStatsInYearOfCentre = catchAsync(async (req, res, next) => {
-    console.log(`monthly expired of centre ${req.user.workFor.name}`);
-})
-exports.monthPredictedStatsInYearOfCentre = catchAsync(async (req, res, next) => {
-    console.log(`monthly predicted of centre ${req.user.workFor.name}`);
+    // console.log(`monthly predicted of centre ${req.user.workFor.name}`);
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
+        ...pipeline_groupCars,
+        ...pipeline_matchCentreById(req.params.centreId),
+        ...pipeline_getExpirationPerYear(req.params.year * 1)
+    ]), req.query).prefilter(prefilterFields)
+        .push(...pipeline_groupCars, ...pipeline_getMonthExpirations)
+        .filter(prefilterFields)
+        .sort()
+        .limitFields()
+        .paginate();
+    const data = await features.query;
+    res.status(200)
+        .json({
+            status: 'success',
+            results: data.length,
+            data: {
+                data
+            },
+        });
 })
 
 
@@ -126,6 +144,7 @@ exports.monthStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
     res.status(200)
         .json({
             status: 'success',
+            results: data.length,
             data: {
                 data
             },
@@ -143,10 +162,11 @@ exports.seasonStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
         .limitFields()
         .paginate();
     //console.log(JSON.stringify(features.query));
-    const data= await features.query;
+    const data = await features.query;
     res.status(200)
         .json({
             status: 'success',
+            results: data.length,
             data: {
                 data
             },
@@ -164,10 +184,11 @@ exports.yearStatsOfAllCentres = catchAsync(async (req, res, next) => {
         .limitFields()
         .paginate();
     //console.log(JSON.stringify(features.query));
-    const data= await features.query;
+    const data = await features.query;
     res.status(200)
         .json({
             status: 'success',
+            results: data.length,
             data: {
                 data
             },
@@ -194,17 +215,34 @@ exports.centreStatsOfAllCentres = catchAsync(async (req, res, next) => {
     res.status(200)
         .json({
             status: 'success',
+            results: data.length,
             data: {
                 data
             },
         });
 })
-exports.getMonthlyExpiredInspectationsOfCentres = catchAsync(async (req, res, next) => {
-    console.log(`monthly expired of centre ${req.user.workFor.name}`);
+exports.monthExpiredStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
+    // console.log(`monthly predicted of centre ${req.user.workFor.name}`);
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
+        ...pipeline_groupCars,
+        ...pipeline_lookupCentre,
+        ...pipeline_getExpirationPerYear(req.params.year * 1)
+    ]), req.query).prefilter(prefilterFields)
+        .push(...pipeline_getMonthExpirations)
+        .filter(prefilterFields)
+        .sort()
+        .limitFields()
+        .paginate();
+    const data = await features.query;
+    res.status(200)
+        .json({
+            status: 'success',
+            results: data.length,
+            data: {
+                data
+            },
+        });
 })
-exports.getMonthlyPredictedInspectationsOfCentres = catchAsync(async (req, res, next) => {
-    console.log(`monthly predicted of centre ${req.user.workFor.name}`);
-});
 
 
 exports.deleteInspection = factory.deleteOne(Inspection);
@@ -258,6 +296,17 @@ const pipeline_getAnalyticsPerYear = (year) => [
             }
         }
     },
+]
+const pipeline_getExpirationPerYear = (year) => [
+    {$unwind: '$expiredDate'},
+    {
+        $match: {
+            expiredDate: {
+                $gte: new Date(`${year}-01-01`),
+                $lte: new Date(`${year}-12-31`)
+            }
+        }
+    }
 ]
 const pipeline_getSeasonAnalytics = [
     {
@@ -314,5 +363,26 @@ const pipeline_getYearAnalytics = [
             // numericString: {$toInt: '3'}
         }
     },
+    {$project: {_id: 0}},
+];
+const pipeline_getMonthExpirations = [
+    {
+        $group: {
+            _id: {$month: '$expiredDate'},
+            prediction: {$sum: 1}
+        }
+    },
+    {$addFields: {month: '$_id'}},
+    {$project: {_id: 0}},
+];
+const pipeline_groupCars = [
+    {
+        $group: {
+            _id: '$car',
+            expiredDate: {$max: '$expiredDate'},
+            centre: {$max: '$centre'}
+        }
+    },
+    {$addFields: {car: '$_id'}},
     {$project: {_id: 0}},
 ];

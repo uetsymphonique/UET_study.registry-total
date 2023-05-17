@@ -16,9 +16,12 @@ router.route('/:id')
 router.get('/centreStatistics/month/:year', InspectionController.monthStatsInYearOfCentre);
 router.get('/centreStatistics/season/:year', InspectionController.seasonStatsInYearOfCentre);
 router.get('/centreStatistics/year',InspectionController.yearStatsOfCentre);
+router.get('/centreStatistics/monthExpired/:year', InspectionController.monthExpiredStatsInYearOfCentre);
+
 
 router.get('/allCentresStatistics/month/:year', AuthController.restrictTo('admin'), InspectionController.monthStatsInYearOfAllCentres);
 router.get('/allCentresStatistics/season/:year', AuthController.restrictTo('admin'), InspectionController.seasonStatsInYearOfAllCentres);
 router.get('/allCentresStatistics/year', AuthController.restrictTo('admin'), InspectionController.yearStatsOfAllCentres);
 router.get('/allCentresStatistics/centre', AuthController.restrictTo('admin'), InspectionController.centreStatsOfAllCentres);
+router.get('/allCentresStatistics/monthExpired/:year', AuthController.restrictTo('admin'), InspectionController.monthExpiredStatsInYearOfAllCentres);
 module.exports = router;

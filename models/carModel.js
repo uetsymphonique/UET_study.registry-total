@@ -246,6 +246,10 @@ const CarSchema = new Schema({
         type: Boolean,
         default: false
     },
+    inspected: {
+        type: Boolean,
+        default: false
+    },
     bookedInspectionDate: {
         type: Date,
     }
