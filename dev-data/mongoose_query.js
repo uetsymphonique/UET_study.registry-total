@@ -36,18 +36,29 @@ const query = async () => {
     //         });
     //     }
     // }
-    for (let i = 2019; i < 2023; i++) {
-        let inspections = await Inspection.find({
-            inspectionNumber: new RegExp(`${i}`)
-        }).sort({
-            inspectionDate: 1
+    // for (let i = 2019; i < 2023; i++) {
+    //     let inspections = await Inspection.find({
+    //         inspectionNumber: new RegExp(`${i}`)
+    //     }).sort({
+    //         inspectionDate: 1
+    //     });
+    //     for (let j = 0; j < inspections.length; j++) {
+    //         inspections[j].inspectionNumber = `${i}-${j.toString().padStart(6, '0')}`;
+    //         await inspections[j].save({
+    //             validateBeforeSave: false,
+    //         });
+    //     }
+    // }
+    const inspections = await Inspection.aggregate()
+        .group({
+            _id: '$car',
         });
-        for (let j = 0; j < inspections.length; j++) {
-            inspections[j].inspectionNumber = `${i}-${j.toString().padStart(6, '0')}`;
-            await inspections[j].save({
-                validateBeforeSave: false,
-            });
-        }
+    for (let i = 0; i < inspections.length; i++) {
+        const car = await Car.findById(inspections[i]._id);
+        car.inspected = true;
+        await car.save({
+            validateBeforeSave: false,
+        });
     }
 }
 
