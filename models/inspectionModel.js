@@ -7,7 +7,7 @@ const User = require('./userModel');
 const InspectionSchema = new Schema({
     inspectionNumber: {
         type: String,
-        required: true,
+        // required: true,
         // unique: true,
         trim: true
     },
@@ -16,14 +16,14 @@ const InspectionSchema = new Schema({
     },
     inspectionDate: {
         type: Date,
-        // default: Date.now()
+        default: Date.now()
     },
     firstTime: {
         type: Boolean,
     },
     specify: {
         type: String,
-        required: true,
+        // required: true,
         enum: {
             values: ['carry_people$lte:9-personal+manufacture$lte:7~36~24',
                 'carry_people$lte:9-personal+manufacture$gt:7and$lte:20~12~12',
@@ -79,9 +79,11 @@ const InspectionSchema = new Schema({
  * indicate the inspection number in sequence
  */
 // InspectionSchema.pre('save', async function (next) {
-//     this.inspectionNumber = await Inspection.countDocuments({
-//         inspectionNumber: new RegExp(`/^${this.inspectionDate.getFullYear()}`)
+//     const index = await Inspection.countDocuments({
+//         inspectionNumber: new RegExp(`^${this.inspectionDate.getFullYear()}`)
 //     });
+//     this.inspectionNumber = `${this.inspectionDate.getFullYear()}-${index.toString()
+//         .padStart(6, '0')}`
 //     next();
 // });
 
@@ -89,8 +91,9 @@ const InspectionSchema = new Schema({
  * indicate this is the first time or not and the expired date of the inspection
  */
 // InspectionSchema.pre('save', async function (next) {
-//     const inspection = await Inspection.findOne({car: this.car});
-//     this.firstTime = !inspection;
+//     const car = await Car.findById(this.car);
+//     this.specify = car.getSpecify(this.inspectionDate.getFullYear());
+//     this.firstTime = !(car.inspected);
 //     const str = this.specify.split('~');
 //     const expiredTime = this.firstTime ? parseInt(str[1]) : parseInt(str[2]);
 //     const addMonths = (date, months) => {
@@ -109,6 +112,10 @@ const InspectionSchema = new Schema({
 //     if (expiredTime) {
 //         this.expiredDate = addMonths(this.inspectionDate, expiredTime);
 //     }
+//     car.inspected = true;
+//     await car.save({
+//         validateBeforeSave: false,
+//     });
 //     next();
 // });
 InspectionSchema.pre(/^find/, function (next) {

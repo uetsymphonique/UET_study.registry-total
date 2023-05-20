@@ -7,16 +7,20 @@ const filterObj = require('./../utils/filterObj');
 const APIFeatures_aggregate = require('./../utils/apiFeatures_aggregate');
 const mongoose = require('mongoose');
 
+exports.setAdditionalCentreId = (req, res, next) => {
+    if (!req.params.centreId) req.params.centreId = req.user.workFor;
+    next();
+}
+exports.setAdditionalUserId = (req, res, next) => {
+    if (!req.params.userId) req.params.userId = req.user._id;
+    next();
+}
+
 exports.setAdditionalParams = (req, res, next) => {
     if (!req.params.userId) req.params.userId = req.user._id;
     if (!req.params.centreId) req.params.centreId = req.user.workFor;
     next();
 };
-exports.setAdditionalPartsInBody = (req, res, next) => {
-    if (!req.body.car) req.body.car = req.params.carId;
-    if (!req.body.centre) req.body.centre = req.params.centreId;
-    next();
-}
 exports.getAllInspections = factory.getAll(Inspection)
 exports.getInspection = factory.getOne(Inspection,
     {
@@ -30,8 +34,9 @@ exports.getInspection = factory.getOne(Inspection,
         select: '-id'
     }
 );
-exports.createInspection = factory.createOne(Inspection);
-exports.makeInspection = catchAsync(async (req, res, next) => {
+// exports.createInspection = factory.createOne(Inspection);
+exports.createInspection = catchAsync(async (req, res, next) => {
+    if (!req.body.car) req.body.car = req.params.carId;
     const doc = await Inspection.create({
         car: req.body.car,
         madeBy: req.user._id,
@@ -127,8 +132,6 @@ exports.monthExpiredStatsInYearOfCentre = catchAsync(async (req, res, next) => {
             },
         });
 })
-
-
 exports.monthStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
     const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupCentre,
@@ -243,12 +246,8 @@ exports.monthExpiredStatsInYearOfAllCentres = catchAsync(async (req, res, next) 
             },
         });
 })
-
-
 exports.deleteInspection = factory.deleteOne(Inspection);
 exports.updateInspection = factory.updateOne(Inspection);
-
-
 const prefilterFields = ['centreName', 'centreSide', 'centreArea', 'centreAddress', 'inspectionYear', 'inspectionSeason', 'inspectionMonth'];
 const pipeline_lookupMadeBy = [
     {
@@ -284,7 +283,7 @@ const pipeline_lookupCentre = [
     }
 ]
 const pipeline_matchCentreById = (id) => [
-    {$match: {'centre': new mongoose.Types.ObjectId(id)}},
+    {$match: {'centre': new mongoose.Types.ObjectId(id)}}
 ];
 const pipeline_getAnalyticsPerYear = (year) => [
     {$unwind: '$inspectionDate'},
