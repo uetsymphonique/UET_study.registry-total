@@ -2,12 +2,14 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const randomFunction = require('./../dev-data/randomFunction')
+const vietnameseString = require('./../utils/vienameseString');
 const Schema = mongoose.Schema;
 
-const UserSchema= new Schema({
+
+const UserSchema = new Schema({
     ssn: {
         type: String,
+        trim: true,
         required: [true, 'A user must have SSN'],
         validate: {
             validator: function (value) {
@@ -24,13 +26,23 @@ const UserSchema= new Schema({
     },
     name: {
         type: String,
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlpha(vietnameseString.format(value));
+            },
+            message: props => `${props.value} is not a valid person name`
+        },
         required: [true, 'A user must have name']
     },
     address: {
         type: String,
+        trim: true,
+        maxLength: 150
     },
     phone: {
         type: String,
+        trim: true,
         required: [true, 'A user must have phone number'],
         validate: {
             validator: function (value) {
@@ -43,6 +55,7 @@ const UserSchema= new Schema({
     },
     email: {
         type: String,
+        trim: true,
         required: [true, 'A user must have email'],
         validate: {
             validator: validator.isEmail,
@@ -52,12 +65,14 @@ const UserSchema= new Schema({
     },
     password: {
         type: String,
+        trim: true,
         required: [true, 'Please provide a password'],
         minlength: 8,
         select: false
     },
     passwordConfirm: {
         type: String,
+        trim: true,
         required: [true, 'Please confirm your password'],
         validate: {
             // This only works on CREATE and SAVE!!!
@@ -113,7 +128,8 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 UserSchema.pre(/^find/, function (next) {
-    this.find({active: {$ne: false}}).select('-__v');
+    this.find({active: {$ne: false}})
+        .select('-__v');
     next();
 });
 UserSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
@@ -130,7 +146,8 @@ UserSchema.methods.changesPasswordAfter = function (JWTTimestamp) {
     return false;
 }
 UserSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto.randomBytes(4).toString('hex');
+    const resetToken = crypto.randomBytes(4)
+        .toString('hex');
     // const resetToken = randomFunction.getRandomNumber(0,999999).toString().padStart(6, '0');
 
     this.passwordResetToken = crypto.createHash('sha256')
