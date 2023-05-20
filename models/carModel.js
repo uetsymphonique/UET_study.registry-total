@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const Schema = mongoose.Schema;
-const Inspection = require('./inspectionModel');
+const provinces = require('./../utils/provinces');
+const vietnameseString = require('./../utils/vienameseString');
 const CarSchema = new Schema({
     numberPlate: {
         type: String,
@@ -20,12 +21,13 @@ const CarSchema = new Schema({
             type: String,
             required: [true, 'A owner must have name'],
             trim: true,
-            maxLength: 60
+            maxLength: 60,
         },
         address: {
             type: String,
             required: [true, 'A owner must have address'],
             trim: true,
+            maxLength: 150,
         },
         phone: {
             type: String,
@@ -69,51 +71,41 @@ const CarSchema = new Schema({
     type: {
         type: String,
         trim: true,
-        //required: true
     },
     brand: {
         type: String,
         trim: true,
-        //required: true
     },
     modelCode: {
         type: String,
-        trim: true,
-        //required: true
+        trim: true
     },
     engineNumber: {
         type: String,
-        trim: true,
-        //required: true
+        trim: true
     },
     chassisNumber: {
         type: String,
-        trim: true,
-        //required: true
+        trim: true
     },
     color: {
         type: String,
-        trim: true,
-        //required: true
+        trim: true
     },
     manufacturedYear: {
         type: String,
         trim: true
-        //required: true
     },
     manufacturedCountry: {
         type: String,
         trim: true
-        //required: true
     },
     boughtPlace: {
         type: String,
         trim: true
-        //required: true
     },
     purpose: {
         type: String,
-        //required: true,
         enum: {
             values: ['personal', 'business'],
             message: 'Only personal or business purpose'
@@ -250,9 +242,9 @@ const CarSchema = new Schema({
         type: Boolean,
         default: false
     },
-    bookedInspectionDate: {
-        type: Date,
-    }
+    predictedAddress: String,
+    predictedArea: String,
+    predictedSide: String,
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
@@ -263,14 +255,14 @@ CarSchema.virtual('inspections', {
     foreignField: 'car',
     localField: '_id'
 });
-// CarSchema.methods.expiredInspectionDate = async function () {
-//     const inspection = await Inspection.find({car: this._id}).sort('expiredDate').limit(1);
-//     return inspection.expiredDate;
-// }
-// CarSchema.virtual('expiredInspectionDate').get(async function () {
-//     const inspection = await Inspection.find({car: this._id}).sort('-expiredDate').limit(1);
-//     return inspection;
-// })
+CarSchema.pre('save', function (next) {
+    this.predictedAddress = this.owner.address.split(', ')[2];
+    this.predictedSide = provinces.mappingProvinceToSide(this.predictedAddress);
+    this.predictedArea = provinces.mappingProvinceToArea(this.predictedAddress);
+    next();
+});
+
+
 CarSchema.pre(/^find/, function (next) {
     this.select('-__v');
     next();
