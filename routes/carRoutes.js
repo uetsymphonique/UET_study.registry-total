@@ -59,10 +59,10 @@ router.patch('/:id/inspects', AuthController.restrictTo('staff'), CarController.
  */
 router.route('/')
     .get(CarController.getAllCars)
-    // .post(AuthController.restrictTo('admin'), CarController.createCar);
+    .post(AuthController.restrictTo('admin'), CarController.createCar);
 router.route('/:id')
     .get(CarController.getCar)
-    // .patch(AuthController.restrictTo('admin'), CarController.updateCar)
-    // .delete(AuthController.restrictTo('admin'), CarController.deleteCar);
+    .patch(AuthController.restrictTo('admin'), CarController.updateCar)
+    .delete(AuthController.restrictTo('admin'), CarController.deleteCar);
 
 module.exports = router;
