@@ -4,7 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const RegistrationCentre = require('../models/registrationCentreModel');
 const dotenv = require('dotenv');
-const formatVietnameseString = require('../utils/formatVienameseString');
+const formatVietnameseString = require('../utils/vienameseString');
 const validator = require('validator');
 const email = (name) => {
     const excludedStrings = 'Trung tâm đăng kiểm Tỉnh Thành phố số'.split(' ');

@@ -51,7 +51,7 @@ const generate = async () => {
         // console.log('init:', curr)
         const car = await Car.findById(oldInspections[i].car);
         if (car) console.log(i);
-        while (curr.expiredDate < Date.now()) {
+        while (curr.expiredDate < new Date('2023-02-01')) {
             const next = createInspection(car, curr, 0);
             termInspections.push(next);
             curr = next;

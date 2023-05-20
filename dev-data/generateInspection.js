@@ -13,11 +13,11 @@ const createInspectionDate = (date) => {
     if (startDate.getFullYear() < 2021){
         return new Date(randomFunction.createDate(startDate, `${startDate.getFullYear()+1}-12-31`));
     } else {
-        return new Date(randomFunction.createDate(startDate, `${startDate.getFullYear()}-12-31`));
+        return new Date(randomFunction.createDate(startDate, `${startDate.getFullYear()}-02-03`));
     }
 }
 const createInspectionNumber = (inspectionDate, index) => {
-    return `${inspectionDate.getFullYear()}${index.toString().padStart(6, '0')}`;
+    return `${inspectionDate.getFullYear()}-${index.toString().padStart(6, '0')}`;
 }
 
 const createInspection = (car, user, index) => {
@@ -27,17 +27,17 @@ const createInspection = (car, user, index) => {
         inspectionDate: date,
         car: car._id,
         madeBy: user._id,
-        specify: car.getSpecify(date.getFullYear()),
-        centre: user.workFor
+        // specify: car.getSpecify(date.getFullYear()),
+        // centre: user.workFor,
     }
 }
 
 const inspections = [];
 const NUM_OF_INSPECTIONS = 7000;
 const generate = async () => {
-    const cars = await Car.find();
+    const cars = await Car.find({inspected: false, registrationNumber: {$regex: new RegExp('^2023-')}});
     const users = await User.find({role: 'staff'});
-    for (let i = 0; i < NUM_OF_INSPECTIONS; i++){
+    for (let i = 0; i < cars.length/5*3; i++){
         inspections.push(createInspection(cars[i],users[randomFunction.getRandomNumber(0, users.length - 1)],i));
     }
 }
@@ -71,7 +71,10 @@ const importer = async () => {
 };
 const deleter = async () => {
     try {
-        await Inspection.deleteMany();
+        await Inspection.deleteMany({
+            inspectionNumber: { $regex: new RegExp('^2023-')},
+            firstTime: true
+        });
         console.log('data successfully deleted!');
         process.exit(0);
     } catch (error) {

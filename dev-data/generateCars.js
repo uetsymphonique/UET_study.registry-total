@@ -131,7 +131,9 @@ const importer = async () => {
 };
 const deleter = async () => {
     try {
-        await Car.deleteMany();
+        await Car.deleteMany({
+            registrationNumber: { $regex: new RegExp('^2023-')}
+        });
         console.log('data successfully deleted!');
         process.exit(0);
     } catch (error) {
