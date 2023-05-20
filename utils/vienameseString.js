@@ -1,4 +1,5 @@
-module.exports = (str) => {
+const validator = require('validator');
+const format = (str) => {
     str = str.toLowerCase();
     str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
     str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
@@ -9,3 +10,7 @@ module.exports = (str) => {
     str = str.replace(/đ/g, "d");
     return str;
 }
+const isAlphanumeric = (str) => {
+    return validator.isAlphanumeric(format(str));
+}
+module.exports = {format, isAlphanumeric};
