@@ -11,10 +11,10 @@ const RegistrationCentreSchema = new Schema({
         unique: true,
         trim: true,
         maxLength: 100,
-        validate:{
-            validator: vietnameseString.isAlphanumeric,
-            message: props => `${props.value} is not a valid name of a registration centre`
-        }
+        // validate:{
+        //     validator: vietnameseString.isAlphanumeric,
+        //     message: props => `${props.value} is not a valid name of a registration centre`
+        // }
     },
     address: {
         type: String,
