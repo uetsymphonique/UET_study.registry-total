@@ -17,7 +17,25 @@ exports.getAllCars = factory.getAll(Car)
 exports.getCar = factory.getOne(Car, {path: 'inspections'});
 exports.createCar = factory.createOne(Car);
 exports.deleteCar = factory.deleteOne(Car);
-exports.updateCar = factory.updateOne(Car);
+exports.updateCar = catchAsync(async (req, res, next) => {
+    const filteredBody = filterObj(req.body, 'registrationNumber', 'registrationDate', 'owner')
+    const doc = await Car.findByIdAndUpdate(req.params.id, filteredBody, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!doc) {
+        return next(new AppError('No document found with that ID', 404));
+    }
+
+    res.status(200)
+        .json({
+            status: 'success',
+            data: {
+                data: doc
+            }
+        });
+});
 exports.inspectCar = catchAsync(async (req, res, next) => {
     const filteredBody = filterObj(req.body, 'type', 'brand', 'modelCode', 'engineNumber', 'chassisNumber', 'color', 'manufacturedYear', 'manufacturedCountry', 'boughtPlace', 'purpose', 'specification', 'recovered');
     const inspectedCar = await Car.findByIdAndUpdate(req.params.id, filteredBody, {
