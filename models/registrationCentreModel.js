@@ -3,13 +3,18 @@ const Schema = mongoose.Schema;
 const provinces = require('../utils/provinces')
 const slugify = require('slugify');
 const validator = require('validator');
-const formatVietnameseString = require('../utils/formatVienameseString');
+const vietnameseString = require('../utils/vienameseString');
 const RegistrationCentreSchema = new Schema({
     name: {
         type: String,
         required: true,
         unique: true,
-        trim: true
+        trim: true,
+        maxLength: 100,
+        validate:{
+            validator: vietnameseString.isAlphanumeric,
+            message: props => `${props.value} is not a valid name of a registration centre`
+        }
     },
     address: {
         type: String,
@@ -84,7 +89,7 @@ RegistrationCentreSchema.pre(/^find/, function (next) {
     next();
 });
 RegistrationCentreSchema.pre('save', function (next) {
-    this.slug = slugify(formatVietnameseString(this.name), {lower: true});
+    this.slug = slugify(vietnameseString.format(this.name), {lower: true});
     this.side = provinces.mappingProvinceToSide(this.address);
     this.area = provinces.mappingProvinceToArea(this.address);
     next();
