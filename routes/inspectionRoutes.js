@@ -1,7 +1,6 @@
 const express = require('express');
 const AuthController = require('./../controllers/authController');
 const InspectionController = require('./../controllers/inspectionController');
-const {restrictTo} = require('../controllers/authController');
 
 const router = express.Router({mergeParams: true});
 /**
