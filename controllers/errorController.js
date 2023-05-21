@@ -39,7 +39,6 @@ const handleDuplicateFieldsDB = (err) => {
     return new AppError(message, 400);
 };
 const handleValidationErrorDB = (err) => {
-    // console.log('hahaha');
     const errors = Object.values(err.errors)
         .map((el) => el.message);
     const message = `Invalid input data. ${errors.join('. ')}`;
@@ -53,18 +52,15 @@ const handleJWTExpiredError = (err) => {
 };
 
 module.exports = (err, req, res, next) => {
-    //console.log(err.stack);
     err.statusCode = err.statusCode || 500; //internal server error
     err.status = err.status || 'error';
 
     if (process.env.NODE_ENV.trim() === 'development') {
         sendErrorDev(err, res);
     } else if (process.env.NODE_ENV.trim() === 'production') {
-        // console.log('---');
-        // console.log(err);
+
         let error = err;
-        // console.log('---');
-        // console.log(error);
+
         if (err.name === 'CastError') {
             error = handleCastErrorDB(error);
         }

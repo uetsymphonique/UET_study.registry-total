@@ -27,12 +27,12 @@ const UserSchema = new Schema({
     name: {
         type: String,
         trim: true,
-        // validate: {
-        //     validator: function (value) {
-        //         return validator.isAlpha(vietnameseString.format(value));
-        //     },
-        //     message: props => `${props.value} is not a valid person name`
-        // },
+        validate: {
+            validator: function (value) {
+                return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid person name`
+        },
         required: [true, 'A user must have name']
     },
     address: {

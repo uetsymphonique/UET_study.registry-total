@@ -109,12 +109,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await user.save({validateBeforeSave: false});
 
     // 3) Send email with reset token
-    // const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-    const resetUrl = `${resetToken}`;
-    // console.log(resetUrl);
     const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         This is the reset-password code to complete the process:\n\n
-        ${resetUrl}\n\n
+        ${resetToken}\n\n
         If you did not request this, please ignore this email and your password will remain unchanged.\n`;
     try {
         await sendEmail({
@@ -186,19 +183,20 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-    // 1) Get the user from collection
-    const user = await User.findById(req.user.id)
-        .select('+password');
+    // 1) Get user from collection
+    const user = await User.findById(req.user.id).select('+password');
 
     // 2) Check if POSTed current password is correct
-    if (!user.correctPassword(req.body.passwordCurrent, req.body.password)) {
-        return next(new AppError('Your current password is wrong!', 401));
+    if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+        return next(new AppError('Your current password is wrong.', 401));
     }
+
     // 3) If so, update password
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
     await user.save();
-    // 4) Log the user in, send JWT
+
+    // 4) Log user in, send JWT
     createSendToken(user, 200, res);
 });
 

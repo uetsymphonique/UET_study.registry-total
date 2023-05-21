@@ -5,10 +5,22 @@ const registrationCentreRouter = require('./../routes/registrationCentreRoutes')
 const inspectionRouter = require('./../routes/inspectionRoutes');
 const InspectionController = require('./../controllers/inspectionController');
 const router = express.Router();
+
+/**
+ * route users/inspections (staff only)
+ * Get all inspections made by myself
+ */
 router.route('/inspections')
     .get(AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalUserId, InspectionController.getAllInspections)
-// router.route('/inspections/:id').get(AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalParams, InspectionController.getInspection);
+
+/**
+ * route users/registrationCentres/inspections (staff only)
+ * Get all inspections made by my centre
+ */
 router.get('/registrationCentres/inspections',AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalCentreId, InspectionController.getAllInspections);
+/**
+ * route
+ */
 router.get('/:userId/inspections', AuthController.protect, AuthController.restrictTo('admin'), InspectionController.getAllInspections);
 
 router.post('/signup', AuthController.signup);

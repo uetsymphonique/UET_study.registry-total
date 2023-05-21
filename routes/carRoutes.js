@@ -54,8 +54,8 @@ router.patch('/:id/inspects', AuthController.restrictTo('staff'), CarController.
 /**
  * Basic CRUD routes
  * Get all cars
- * Create car (not use)
- * Get car, delete car (not use), update car (not use) by id
+ * Create car
+ * Get car, delete car, update car by id
  */
 router.route('/')
     .get(CarController.getAllCars)

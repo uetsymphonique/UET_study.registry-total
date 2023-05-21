@@ -142,7 +142,6 @@ exports.monthStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
         .sort()
         .limitFields()
         .paginate();
-    //console.log(JSON.stringify(features.query));
     const data = await features.query;
     res.status(200)
         .json({
@@ -154,7 +153,6 @@ exports.monthStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
         });
 });
 exports.seasonStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
-    // console.log(`seasonly inspected in year ${req.params.year}`);
     const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_lookupCentre,
         ...pipeline_getAnalyticsPerYear(req.params.year * 1)
@@ -186,7 +184,6 @@ exports.yearStatsOfAllCentres = catchAsync(async (req, res, next) => {
         .sort()
         .limitFields()
         .paginate();
-    //console.log(JSON.stringify(features.query));
     const data = await features.query;
     res.status(200)
         .json({
@@ -213,7 +210,6 @@ exports.centreStatsOfAllCentres = catchAsync(async (req, res, next) => {
         .sort()
         .limitFields()
         .paginate();
-    // console.log(JSON.stringify(features.query.pipeline()));
     const data = await features.query;
     res.status(200)
         .json({
@@ -225,7 +221,6 @@ exports.centreStatsOfAllCentres = catchAsync(async (req, res, next) => {
         });
 })
 exports.monthExpiredStatsInYearOfAllCentres = catchAsync(async (req, res, next) => {
-    // console.log(`monthly predicted of centre ${req.user.workFor.name}`);
     const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_groupCars,
         ...pipeline_lookupCentre,

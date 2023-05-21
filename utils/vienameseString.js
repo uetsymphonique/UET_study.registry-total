@@ -10,7 +10,5 @@ const format = (str) => {
     str = str.replace(/đ/g, "d");
     return str;
 }
-const isAlphanumeric = (str) => {
-    return validator.isAlphanumeric(format(str));
-}
-module.exports = {format, isAlphanumeric};
+
+module.exports = {format};
