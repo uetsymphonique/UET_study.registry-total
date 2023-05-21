@@ -122,7 +122,13 @@ InspectionSchema.pre(/^find/, function (next) {
     this.select('-__v -id');
     next();
 });
-
+InspectionSchema.pre('find', function (next) {
+    this.populate({
+        path: 'car',
+        select: 'numberPlate'
+    });
+    next();
+})
 
 const Inspection = mongoose.model('Inspection', InspectionSchema);
 module.exports = Inspection;

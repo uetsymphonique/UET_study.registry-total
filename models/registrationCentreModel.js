@@ -79,11 +79,11 @@ RegistrationCentreSchema.virtual('employees', {
     foreignField: 'workFor',
     localField: '_id',
 });
-RegistrationCentreSchema.virtual('inspections', {
-    ref: 'Inspection',
-    foreignField: 'centre',
-    localField: '_id',
-});
+// RegistrationCentreSchema.virtual('inspections', {
+//     ref: 'Inspection',
+//     foreignField: 'centre',
+//     localField: '_id',
+// });
 RegistrationCentreSchema.pre(/^find/, function (next) {
     this.select('-__v -id');
     next();
