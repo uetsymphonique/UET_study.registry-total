@@ -15,7 +15,7 @@ class APIFeatures {
         // 1b) Advanced filtering
         let queryString = JSON.stringify(queryObject);
         queryString = queryString.replace(
-            /\b(gte|gt|lte|lt|ne)\b/g,
+            /\b(gte|gt|lte|lt|ne|regex)\b/g,
             (match) => `$${match}`
         );
         // console.log(JSON.parse(queryString));
