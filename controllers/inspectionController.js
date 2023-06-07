@@ -110,6 +110,25 @@ exports.yearStatsOfCentre = catchAsync(async (req, res, next) => {
             },
         });
 });
+exports.monthYearStatsOfCentre = catchAsync(async (req, res, next) => {
+    const features = new APIFeatures_aggregate(Inspection.aggregate([
+        ...pipeline_matchCentreById(req.params.centreId),
+    ]), req.query).prefilter(prefilterFields)
+        .push(...pipeline_getMonthYearAnalytics)
+        .filter(prefilterFields)
+        .sort()
+        .limitFields()
+        .paginate();
+    const data = await features.query;
+    res.status(200)
+        .json({
+            status: 'success',
+            results: data.length,
+            data: {
+                data
+            },
+        });
+});
 exports.monthExpiredStatsInYearOfCentre = catchAsync(async (req, res, next) => {
     // console.log(`monthly predicted of centre ${req.user.workFor.name}`);
     const features = new APIFeatures_aggregate(Inspection.aggregate([
@@ -355,6 +374,22 @@ const pipeline_getYearAnalytics = [
         $addFields: {
             year: '$_id',
             // numericString: {$toInt: '3'}
+        }
+    },
+    {$project: {_id: 0}},
+];
+const pipeline_getMonthYearAnalytics = [
+    {
+        $group: {
+            _id: {year: {$year: '$inspectionDate'}, month: {$month: '$inspectionDate'}},
+            count: {$sum: 1},
+            //inspections: {$push: '$inspection_number'},
+        }
+    },
+    {
+        $addFields: {
+            year: '$_id.year',
+            month: '$_id.month'
         }
     },
     {$project: {_id: 0}},

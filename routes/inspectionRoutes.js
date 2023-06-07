@@ -45,12 +45,17 @@ router.get('/centreStatistics/season/:year', InspectionController.setAdditionalC
 router.get('/centreStatistics/year', InspectionController.setAdditionalCentreId, InspectionController.yearStatsOfCentre);
 
 /**
+ * route /inspections/centreStatistics/monthYear
+ */
+router.get('/centreStatistics/monthYear', InspectionController.setAdditionalCentreId, InspectionController.monthYearStatsOfCentre);
+/**
  * route /inspections/centreStatistics/monthExpired/:year
  * Usage: /inspections/centreStatistics/monthExpired/:year (staff)
  *        /registrationCentres/:centreId/inspections/centreStatistics/monthExpired/:year (admin)
  * Number of inspections made by your centre (with staff) or a centre (with admin) expired in each month of a particular year
  */
 router.get('/centreStatistics/monthExpired/:year', InspectionController.setAdditionalCentreId, InspectionController.monthExpiredStatsInYearOfCentre);
+
 
 /**
  * Statistics about the number of inspections in all centres
