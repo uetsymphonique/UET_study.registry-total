@@ -3,8 +3,8 @@ const router = express.Router({mergeParams: true});
 const AuthController = require('./../controllers/authController');
 const CarController = require('./../controllers/carController');
 const InspectionRouter = require('./inspectionRoutes');
-const multer = require('multer');
-const upload = multer({dest: 'uploads/xlsx/'});
+// const multer = require('multer');
+// const upload = multer({dest: 'uploads/xlsx/'});
 
 // All routes require logging in
 router.use(AuthController.protect);
@@ -19,7 +19,7 @@ router.use('/:carId/inspections', InspectionRouter);
  * routes /cars/uploads
  * Upload file xlsx to server and save it to the database
  */
-router.post('/uploads', AuthController.restrictTo('admin'), upload.single('file'), CarController.upload);
+// router.post('/uploads', AuthController.restrictTo('admin'), upload.single('file'), CarController.upload);
 
 /**
  * routes cars/allCentresStatistics/expirationPredictions
