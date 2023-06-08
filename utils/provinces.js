@@ -61,10 +61,25 @@ const getSides = () => {
 const getAddressNames = () => {
     let ret = [];
     pcvn.getWards()
-      .forEach((address) => {
+        .forEach((address) => {
             ret.push(address.full_name);
         });
     return ret;
+}
+const getAreasOfSide = (side) => {
+    if (side === "Miền Bắc") return ["Tây Bắc Bộ", "Đông Bắc Bộ", "Đồng bằng Sông Hồng"];
+    if (side === "Miền Trung") return ["Bắc Trung Bộ", "Duyên hải Nam Trung Bộ", "Tây Nguyên"];
+    if (side === "Miền Nam") return ["Đông Nam Bộ", "Đồng bằng Sông Cửu Long"];
+}
+const getProvincesOfArea = (area) => {
+    if(area === "Tây Bắc Bộ") return areas[0];
+    if(area === "Đông Bắc Bộ") return areas[1];
+    if(area === "Đồng bằng Sông Hồng") return areas[2];
+    if(area === "Bắc Trung Bộ") return areas[3];
+    if(area === "Duyên hải Nam Trung Bộ") return areas[4];
+    if(area === "Tây Nguyên") return areas[5];
+    if(area === "Đông Nam Bộ") return areas[6];
+    if(area === "Đồng bằng Sông Cửu Long") return areas[7];
 }
 module.exports = {
     getProvinceNames,
@@ -73,4 +88,6 @@ module.exports = {
     getAreas,
     getSides,
     getAddressNames,
+    getAreasOfSide,
+    getProvincesOfArea,
 }

@@ -27,15 +27,18 @@ class APIFeatures_aggregate {
     filter(prefilterFields) {
         // 1a) Filtering
         const queryObject = {...this.queryString};
+        // console.log(JSON.stringify(queryObject));
         const excludedFields = ['page', 'sort', 'limit', 'fields', ...prefilterFields];
         excludedFields.forEach((el) => delete queryObject[el]);
         // 1b) Advanced filtering
         let queryString = JSON.stringify(queryObject);
+        // console.log(queryString);
         queryString = queryString.replace(
             /\b(gte|gt|lte|lt)\b/g,
             (match) => `$${match}`
         );
         queryString = queryString.replace(/"(\d+)"/g, "$1");
+        console.log(queryString);
         this.query.match(JSON.parse(queryString));
         return this;
     }
