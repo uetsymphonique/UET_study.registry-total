@@ -80,7 +80,8 @@ exports.currentMonthExpiredPredictionsOfAllCentres = catchAsync(async (req, res,
             {
                 $group: {
                     _id: '$status',
-                    count: {$sum: 1}
+                    count: {$sum: 1},
+                    cars: {$push: '$car'}
                 }
             },
             {$addFields: {status: '$_id'}},
@@ -111,7 +112,8 @@ exports.currentMonthExpiredPredictionsOfCentre = catchAsync(async (req, res, nex
             {
                 $group: {
                     _id: '$status',
-                    count: {$sum: 1}
+                    count: {$sum: 1},
+                    cars: {$push: '$car'}
                 }
             },
             {$addFields: {status: '$_id'}},
@@ -207,7 +209,17 @@ const pipeline_groupCars = [
             centre: {$max: '$centre'}
         }
     },
-    {$addFields: {car: '$_id'}},
+    {
+        $lookup: {
+            from: 'cars',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'car',
+            pipeline: [{$project: {_id: 1, numberPlate: 1, registrationNumber: 1}}],
+        }
+    },
+    {$unwind: '$car'},
     {$project: {_id: 0}},
+
 ];
 const prefilterFields = ['centreName', 'centreSide', 'centreArea', 'centreAddress', 'inspectionYear', 'inspectionSeason', 'inspectionMonth'];
