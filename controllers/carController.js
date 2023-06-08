@@ -55,8 +55,8 @@ exports.inspectCar = catchAsync(async (req, res, next) => {
         })
 });
 exports.upload = catchAsync(async (req, res, next) => {
-    if (!req.file.filename) {
-        return next(new AppError('No file!', 400));
+    if (!req.file || !req.file.filename) {
+        return next(new AppError('No file uploaded!', 400));
     } else {
         const data = await Car.create(xlsxToJson(req.file.path));
         res.status(201)
