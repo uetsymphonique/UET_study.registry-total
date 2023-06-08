@@ -23,7 +23,7 @@ app.use(helmet());
 app.use(cors());
 
 //development logging
-if (process.env.NODE_ENV.trim() === "development") {
+if (process.env.NODE_ENV.toString().trim() === "development") {
   app.use(logger("dev"));
 }
 
