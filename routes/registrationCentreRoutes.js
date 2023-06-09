@@ -12,6 +12,11 @@ const router = express.Router();
 router.use(AuthController.protect, AuthController.restrictTo('admin'));
 
 /**
+ * route: :id/registrationCentre/deactivateCentre
+ * Deactivate a centre and all its employees
+ */
+router.delete('/deactivateCentre/:id', RegistrationCentreController.deactivateCentre);
+/**
  * Routing to /inspections
  * Usage: /registrationCentre/:centreId/inspections/...
  * For: Get all inspections or inspection statistics of a particular centre
@@ -33,7 +38,7 @@ router.route('/')
 router.route('/:id')
     .get(RegistrationCentreController.getCentre)
     .patch(RegistrationCentreController.updateCentre)
-    .delete(RegistrationCentreController.deleteCentre);
+    // .delete(RegistrationCentreController.deleteCentre);
 
 
 module.exports = router;
