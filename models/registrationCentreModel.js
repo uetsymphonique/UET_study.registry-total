@@ -7,14 +7,16 @@ const vietnameseString = require('../utils/vienameseString');
 const RegistrationCentreSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        required: [true, 'A centre must have a name'],
         unique: true,
         trim: true,
         maxLength: 100,
-        // validate:{
-        //     validator: vietnameseString.isAlphanumeric,
-        //     message: props => `${props.value} is not a valid name of a registration centre`
-        // }
+        validate: {
+            validator: function (value) {
+                return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid centre name`
+        }
     },
     address: {
         type: String,
@@ -68,6 +70,20 @@ const RegistrationCentreSchema = new Schema({
         type: Date,
         default: Date.now(),
         select: false,
+    },
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    },
+    role: {
+        type: String,
+        enum: {
+            values: ['registry-total', 'registry-branch'],
+            message: props => `${props.value} is not a valid role`
+        },
+        default: 'registry-branch',
+        select: false
     }
 }, {
     toJSON: {virtuals: true},
@@ -94,5 +110,12 @@ RegistrationCentreSchema.pre('save', function (next) {
     this.area = provinces.mappingProvinceToArea(this.address);
     next();
 });
+RegistrationCentreSchema.pre(/^find/, function (next) {
+    this.find({
+        active: {$ne: false}
+    }).select('-__v');
+    next();
+});
+
 const RegistrationCentre = mongoose.model('RegistrationCentre', RegistrationCentreSchema);
 module.exports = RegistrationCentre;

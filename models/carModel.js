@@ -22,6 +22,12 @@ const CarSchema = new Schema({
             required: [true, 'A owner must have name'],
             trim: true,
             maxLength: 60,
+            validate: {
+                validator: function (value) {
+                    return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+                },
+                message: props => `${props.value} is not a valid person name`
+            }
         },
         address: {
             type: String,
@@ -62,7 +68,13 @@ const CarSchema = new Schema({
         type: String,
         trim: true,
         required: true,
-        unique: true
+        unique: true,
+        validate: {
+            validator: function (value) {
+                return (/^\d{4}-\d{6}$/.test(value));
+            },
+            message: props => `${props.value} is not a valid registration number`
+        }
     },
     registrationDate: {
         type: Date,
@@ -71,38 +83,93 @@ const CarSchema = new Schema({
     type: {
         type: String,
         trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid type`
+        }
     },
     brand: {
         type: String,
         trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid brand`
+        }
     },
     modelCode: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid value`
+        }
     },
     engineNumber: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid value`
+        }
     },
     chassisNumber: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid value`
+        }
     },
     color: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid value`
+        }
     },
     manufacturedYear: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function (value) {
+                // Phone number has 10 digits
+                return (/^[0-9]{4}$/.test(value));
+            },
+            message: props => `${props.value} is not a valid year`
+        },
     },
     manufacturedCountry: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid value`
+        }
     },
     boughtPlace: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+            },
+            message: props => `${props.value} is not a valid value`
+        }
     },
     purpose: {
         type: String,
@@ -208,6 +275,12 @@ const CarSchema = new Schema({
         fuel: {
             type: String,
             trim: true,
+            validate: {
+                validator: function (value) {
+                    return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+                },
+                message: props => `${props.value} is not a valid value`
+            }
         },
         engineDisplacement: {
             type: String,

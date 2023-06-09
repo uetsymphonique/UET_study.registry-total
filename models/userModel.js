@@ -2,6 +2,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
+const RegistrationCentre = require('./registrationCentreModel')
 const vietnameseString = require('./../utils/vienameseString');
 const Schema = mongoose.Schema;
 
@@ -27,6 +28,7 @@ const UserSchema = new Schema({
     name: {
         type: String,
         trim: true,
+        maxLength: 60,
         validate: {
             validator: function (value) {
                 return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
@@ -34,11 +36,6 @@ const UserSchema = new Schema({
             message: props => `${props.value} is not a valid person name`
         },
         required: [true, 'A user must have name']
-    },
-    address: {
-        type: String,
-        trim: true,
-        maxLength: 150
     },
     phone: {
         type: String,
@@ -92,8 +89,10 @@ const UserSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ['staff', 'admin'],
-        default: 'staff'
+        enum: {
+            values: ['staff', 'admin'],
+            message: props => `${props.value} is not a valid role`
+        }
     },
     active: {
         type: Boolean,
@@ -114,7 +113,6 @@ UserSchema.virtual('inspections', {
 UserSchema.pre('save', async function (next) {
     //only run this function if password was actually modified
     if (!this.isModified('password')) return next();
-
     //hash the password with cost 12
     this.password = await bcrypt.hash(this.password, 12)
     this.passwordConfirm = undefined;
@@ -123,10 +121,14 @@ UserSchema.pre('save', async function (next) {
 
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password') || this.isNew) return next();
-
     this.passwordChangedAt = Date.now() - 1500;
     next();
 });
+UserSchema.pre('save', async function (next)  {
+    const centre = await RegistrationCentre.findById(this.workFor)
+    this.role = (centre.role === 'registry-total') ? 'admin' : 'staff';
+    next();
+})
 UserSchema.pre(/^find/, function (next) {
     this.find({active: {$ne: false}})
         .select('-__v');

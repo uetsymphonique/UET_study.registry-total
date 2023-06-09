@@ -7,9 +7,14 @@ const User = require('./userModel');
 const InspectionSchema = new Schema({
     inspectionNumber: {
         type: String,
-        // required: true,
-        // unique: true,
-        trim: true
+        trim: true,
+        unique: true,
+        validate: {
+            validator: function (value) {
+                return (/^\d{4}-\d{6}$/.test(value));
+            },
+            message: props => `${props.value} is not a valid registration number`
+        }
     },
     expiredDate: {
         type: Date,
@@ -119,7 +124,7 @@ InspectionSchema.pre('save', async function (next) {
     next();
 });
 InspectionSchema.pre(/^find/, function (next) {
-    this.select('-__v -id');
+    this.select('-__v');
     next();
 });
 InspectionSchema.pre('find', function (next) {
