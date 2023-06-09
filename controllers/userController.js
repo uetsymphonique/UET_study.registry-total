@@ -4,6 +4,7 @@ const User = require('./../models/userModel');
 const factory = require('./handleFactory')
 const filterObj = require('./../utils/filterObj');
 const sendEmail = require('../utils/email');
+const crypto = require('crypto');
 
 
 exports.getAllUsers = factory.getAll(User);
@@ -57,6 +58,10 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
         });
 });
 exports.createAccount = catchAsync(async (req, res, next) => {
+    const randomPassword = crypto.randomBytes(8)
+        .toString('hex');
+    req.body.password = randomPassword;
+    req.body.passwordConfirm = randomPassword;
     const message = `Your account has been created. Please login your account with your email address and password: ${req.body.password}`;
     try {
         await sendEmail({
@@ -79,16 +84,16 @@ exports.createAccount = catchAsync(async (req, res, next) => {
         });
 });
 
-exports.inactivateAccount = catchAsync(async (req, res, next) => {
+exports.deactivateAccount = catchAsync(async (req, res, next) => {
     const user = await User.findById(req.params.id);
     if (!user) {
         return next(new AppError('No user found with this id', 404));
     }
-    const message = `Your account has been inactivated. Please contact your administrator for more information`;
+    const message = `Your account has been deactivated. Please contact your administrator for more information`;
     try {
         await sendEmail({
             email: user.email,
-            subject: 'Your account has been inactivated',
+            subject: 'Your account has been deactivated',
             text: message
         });
     } catch (err) {
@@ -99,39 +104,13 @@ exports.inactivateAccount = catchAsync(async (req, res, next) => {
     await user.save({
         validateBeforeSave: false
     });
-    res.status(200)
+    res.status(204)
         .json({
             status: 'success',
-            message: 'An email has been sent to the user. Account has been inactivated successfully!'
+            message: 'An email has been sent to the user. Account has been deactivated successfully!'
         });
 });
 
-exports.activateAccount = catchAsync(async (req, res, next) => {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-        return next(new AppError('No user found with this id', 404));
-    }
-    const message = `Your account has been activated. Please contact your administrator for more information`;
-    try {
-        await sendEmail({
-            email: user.email,
-            subject: 'Your account has been activated',
-            text: message
-        });
-    } catch (err) {
-        console.log(err);
-        return next(new AppError('Email could not be sent', 500));
-    }
-    user.active = false;
-    await user.save({
-        validateBeforeSave: false
-    });
-    res.status(200)
-        .json({
-            status: 'success',
-            message: 'An email has been sent to the user. Account has been inactivated successfully!'
-        });
-});
 
 exports.createUser = factory.createOne(User);
 exports.getUser = factory.getOne(User, {

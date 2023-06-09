@@ -33,7 +33,7 @@ router.post('/createAccount', AuthController.protect, AuthController.restrictTo(
  * route /users/deactivateAccount/:id (admin only)
  * Deactivate an account (active: false and not delete doccument in database)
  */
-router.delete('/deactivateAccount/:id', AuthController.protect, AuthController.restrictTo('admin'), UserController.inactivateAccount);
+router.delete('/deactivateAccount/:id', AuthController.protect, AuthController.restrictTo('admin'), UserController.deactivateAccount);
 /**
  * route /users/login
  * Login
