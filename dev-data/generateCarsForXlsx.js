@@ -75,7 +75,7 @@ const createCar = (index) => {
     return {
         numberPlate: createNumberPlate(),
         owner: createOwner(index),
-        registrationDate: randomFunction.createDate('2023-01-01', '2023-04-30'),
+        registrationDate: randomFunction.createDate('2023-05-01', '2023-05-31'),
         type: carType,
         brand: createBrand(),
         modelCode: createModelCode(),
@@ -93,7 +93,7 @@ const createCar = (index) => {
 
 const cars = [];
 
-for (let i = 9000; i < 9500; i++) {
+for (let i = 9500; i < 9550; i++) {
     cars.push(createCar(i));
 }
 
@@ -118,4 +118,4 @@ xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
 const xlsxData = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
 
-fs.writeFileSync(`${__dirname}/data6.xlsx`, xlsxData);
+fs.writeFileSync(`${__dirname}/data7.xlsx`, xlsxData);

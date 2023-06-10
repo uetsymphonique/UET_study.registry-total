@@ -93,12 +93,6 @@ const CarSchema = new Schema({
     brand: {
         type: String,
         trim: true,
-        validate: {
-            validator: function (value) {
-                return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
-            },
-            message: props => `${props.value} không phải giá trị hợp lệ`
-        }
     },
     modelCode: {
         type: String,
@@ -163,13 +157,7 @@ const CarSchema = new Schema({
     },
     boughtPlace: {
         type: String,
-        trim: true,
-        validate: {
-            validator: function (value) {
-                return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
-            },
-            message: props => `${props.value} không phải giá trị hợp lệ`
-        }
+        trim: true
     },
     purpose: {
         type: String,

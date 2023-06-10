@@ -78,7 +78,7 @@ const query = async () => {
     //         validateBeforeSave: false
     //     });
     // }
-    await RegistrationCentre.updateMany({name: {$ne: 'Cục đăng kiểm Việt Nam'}}, {role: 'registry-branch', active: true});
+    await Car.deleteMany({registrationNumber: new RegExp('^2023-0005', 'i')})
 }
 
 const run = async () => {
