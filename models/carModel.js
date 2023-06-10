@@ -24,7 +24,7 @@ const CarSchema = new Schema({
             maxLength: 60,
             validate: {
                 validator: function (value) {
-                    return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
+                    return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
                 },
                 message: props => `${props.value} không phải tên hợp lệ`
             }
