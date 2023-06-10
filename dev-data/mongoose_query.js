@@ -38,19 +38,19 @@ const query = async () => {
     //     }
     // }
 
-    for (let i = 2022; i < 2024; i++) {
-        let inspections = await Inspection.find({
-            inspectionNumber: new RegExp(`^${i}`)
-        }).sort({
-            inspectionDate: 1
-        });
-        for (let j = 0; j < inspections.length; j++) {
-            inspections[j].inspectionNumber = `${i}-${j.toString().padStart(6, '0')}`;
-            await inspections[j].save({
-                validateBeforeSave: false,
-            });
-        }
-    }
+    // for (let i = 2022; i < 2024; i++) {
+    //     let inspections = await Inspection.find({
+    //         inspectionNumber: new RegExp(`^${i}`)
+    //     }).sort({
+    //         inspectionDate: 1
+    //     });
+    //     for (let j = 0; j < inspections.length; j++) {
+    //         inspections[j].inspectionNumber = `${i}-${j.toString().padStart(6, '0')}`;
+    //         await inspections[j].save({
+    //             validateBeforeSave: false,
+    //         });
+    //     }
+    // }
 
 
     // const inspections = await Inspection.aggregate()
@@ -78,6 +78,7 @@ const query = async () => {
     //         validateBeforeSave: false
     //     });
     // }
+    await RegistrationCentre.updateMany({name: {$ne: 'Cục đăng kiểm Việt Nam'}}, {role: 'registry-branch', active: true});
 }
 
 const run = async () => {

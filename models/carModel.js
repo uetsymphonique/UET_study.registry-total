@@ -13,47 +13,47 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return (/^\d{2}[a-zA-Z]\d-\d{3}\.\d{2}$/.test(value));
             },
-            message: props => `${props.value} is not a valid number plate`
+            message: props => `${props.value} không phải biển số xe hợp lệ`
         }
     },
     owner: {
         name: {
             type: String,
-            required: [true, 'A owner must have name'],
+            required: [true, 'Chủ sở hữu yêu cầu có tên'],
             trim: true,
             maxLength: 60,
             validate: {
                 validator: function (value) {
                     return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
                 },
-                message: props => `${props.value} is not a valid person name`
+                message: props => `${props.value} không phải tên hợp lệ`
             }
         },
         address: {
             type: String,
-            required: [true, 'A owner must have address'],
+            required: [true, 'Chủ sở hữu yêu cầu có địa chỉ'],
             trim: true,
             maxLength: 150,
         },
         phone: {
             type: String,
-            required: [true, 'A owner must have phone number'],
+            required: [true, 'Chủ sở hữu yêu cầu có số điện thoại'],
             validate: {
                 validator: function (value) {
                     // Phone number has 10 digits
                     return (/^[0-9]{10}$/.test(value));
                 },
-                message: props => `${props.value} is not a valid phone number`
+                message: props => `${props.value} không phải số điện thoại hợp lệ`
             },
             trim: true,
             unique: true
         },
         email: {
             type: String,
-            required: [true, 'A owner must have email'],
+            required: [true, 'Chủ sở hữu yêu cầu có email'],
             validate: {
                 validator: validator.isEmail,
-                message: props => `${props.value} is not a valid email address`
+                message: props => `${props.value} không phải địa chỉ email hợp lệ`
             },
             unique: true,
             trim: true
@@ -73,7 +73,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return (/^\d{4}-\d{6}$/.test(value));
             },
-            message: props => `${props.value} is not a valid registration number`
+            message: props => `${props.value} không phải số đăng kí xe hợp lệ`
         }
     },
     registrationDate: {
@@ -87,7 +87,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid type`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     brand: {
@@ -97,7 +97,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid brand`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     modelCode: {
@@ -107,7 +107,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid value`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     engineNumber: {
@@ -117,7 +117,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid value`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     chassisNumber: {
@@ -127,7 +127,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid value`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     color: {
@@ -137,7 +137,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid value`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     manufacturedYear: {
@@ -148,7 +148,7 @@ const CarSchema = new Schema({
                 // Phone number has 10 digits
                 return (/^[0-9]{4}$/.test(value));
             },
-            message: props => `${props.value} is not a valid year`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         },
     },
     manufacturedCountry: {
@@ -158,7 +158,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid value`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     boughtPlace: {
@@ -168,7 +168,7 @@ const CarSchema = new Schema({
             validator: function (value) {
                 return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid value`
+            message: props => `${props.value} không phải giá trị hợp lệ`
         }
     },
     purpose: {
@@ -186,7 +186,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+x\d+$/.test(value));
                 },
-                message: props => `${props.value} is not a valid wheel formula`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         wheelTread: {
@@ -196,7 +196,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\s*\(\s*mm\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid wheel tread`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         overallDimension: {
@@ -206,7 +206,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\s*x\s*\d+\s*x\s*\d+\s*\(\s*mm\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid overall dimension`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         containerDimension: {
@@ -216,7 +216,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\s*x\s*\d+\s*x\s*\d+\s*\(\s*mm\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid container dimension`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         lengthBase: {
@@ -226,7 +226,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\s*\(\s*mm\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid length base`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         kerbMass: {
@@ -236,7 +236,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\s*\(\s*kg\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid kerb mass`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         designedAndAuthorizedPayload: {
@@ -246,7 +246,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\/\d+\s*\(\s*kg\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid designed/authorized payload`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         designedAndAuthorizedTotalMass: {
@@ -256,7 +256,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\/\d+\s*\(\s*kg\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid designed/authorized total mass`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         designedAndAuthorizedTowedMass: {
@@ -266,7 +266,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\/\d+\s*\(\s*kg\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid designed/authorized towed mass`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         permissibleCarry: {
@@ -279,7 +279,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
                 },
-                message: props => `${props.value} is not a valid value`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         engineDisplacement: {
@@ -289,7 +289,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+\s*\(\s*cm3\s*\)$/.test(value));
                 },
-                message: props => `${props.value} is not a valid engine displacement`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         maximumOutputToRpmRatio: {
@@ -299,7 +299,7 @@ const CarSchema = new Schema({
                 validator: function (value) {
                     return (/^\d+kW\/\d+vph$/.test(value));
                 },
-                message: props => `${props.value} is not a valid output to rpm ratio`
+                message: props => `${props.value} không phải giá trị hợp lệ`
             }
         },
         numberOfTiresAndTireSize: {

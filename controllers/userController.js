@@ -87,7 +87,7 @@ exports.createAccount = catchAsync(async (req, res, next) => {
 exports.deactivateAccount = catchAsync(async (req, res, next) => {
     const user = await User.findById(req.params.id);
     if (!user) {
-        return next(new AppError('No user found with this id', 404));
+        return next(new AppError('Không có bản ghi nào được tìm thấy', 404));
     }
     const message = `Your account has been deactivated. Please contact your administrator for more information`;
     try {

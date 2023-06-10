@@ -7,7 +7,7 @@ const vietnameseString = require('../utils/vienameseString');
 const RegistrationCentreSchema = new Schema({
     name: {
         type: String,
-        required: [true, 'A centre must have a name'],
+        required: [true, 'Trung tâm yêu cầu có tên'],
         unique: true,
         trim: true,
         maxLength: 100,
@@ -15,14 +15,14 @@ const RegistrationCentreSchema = new Schema({
             validator: function (value) {
                 return validator.isAlphanumeric(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid centre name`
+            message: props => `${props.value} không phải tên trung tâm hợp lệ`
         }
     },
     address: {
         type: String,
         enum: {
             values: provinces.getProvinceNames(),
-            message: props => `${props.value} is not a valid province`
+            message: props => `${props.value} không phải địa chỉ hợp lệ`
         },
         required: true
     },
@@ -30,14 +30,14 @@ const RegistrationCentreSchema = new Schema({
         type: String,
         enum: {
             values: provinces.getSides(),
-            message: props => `${props.value} is not a valid side`
+            message: props => `${props.value} không phải miền hợp lệ`
         },
     },
     area: {
         type: String,
         enum: {
             values: provinces.getAreas(),
-            message: props => `${props.value} is not a valid area`
+            message: props => `${props.value} không phải vùng hợp lệ`
         }
     },
     slug: String,
@@ -53,7 +53,7 @@ const RegistrationCentreSchema = new Schema({
                 // Phone number has 10 digits
                 return (/^[0-9]{10}$/.test(value));
             },
-            message: props => `${props.value} is not a valid phone number`
+            message: props => `${props.value} không phải số điện thoại hợp lệ`
         },
         unique: true
     },
@@ -62,7 +62,7 @@ const RegistrationCentreSchema = new Schema({
         required: true,
         validate: {
             validator: validator.isEmail,
-            message: props => `${props.value} is not a valid email address`
+            message: props => `${props.value} không phải địa chỉ email hợp lệ`
         },
         unique: true
     },
@@ -80,7 +80,7 @@ const RegistrationCentreSchema = new Schema({
         type: String,
         enum: {
             values: ['registry-total', 'registry-branch'],
-            message: props => `${props.value} is not a valid role`
+            message: props => `${props.value} không phải vai trò hợp lệ`
         },
         default: 'registry-branch',
         select: false

@@ -24,7 +24,7 @@ const sendErrorProd = (err, res) => {
         res.status(500)
             .json({
                 status: 'error',
-                message: 'Something went very wrong!!!',
+                message: 'Có lỗi đã xảy ra!',
             });
     }
 };
@@ -45,10 +45,10 @@ const handleValidationErrorDB = (err) => {
     return new AppError(message, 400);
 };
 const handleJWTError = (err) => {
-    return new AppError('Invalid token. Please login again', 401)
+    return new AppError('Token không hợp lệ. Vui lòng đăng nhập lại!', 401)
 };
 const handleJWTExpiredError = (err) => {
-    return new AppError('Token expired. Please login again', 401)
+    return new AppError('Phiên đã hết hạn. Vui lòng đăng nhập lại', 401)
 };
 
 module.exports = (err, req, res, next) => {

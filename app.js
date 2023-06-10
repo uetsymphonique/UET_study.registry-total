@@ -37,7 +37,7 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 // body parser, reading data from body to req.body
-app.use(express.json());
+app.use(express.json( {limit: '10kb'}));
 
 //data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -65,7 +65,7 @@ app.use("/api/v1/inspections", inspectionRouter);
 app.use("/api/v1/utils", utilRouter);
 
 app.all("*", (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+  next(new AppError(`Không thể tìm thấy ${req.originalUrl} trên server!`, 404));
 });
 
 app.use(globalErrorHandler);

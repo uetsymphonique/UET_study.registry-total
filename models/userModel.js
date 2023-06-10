@@ -11,19 +11,19 @@ const UserSchema = new Schema({
     ssn: {
         type: String,
         trim: true,
-        required: [true, 'A user must have SSN'],
+        required: [true, 'Người dùng cần có mã CCCD'],
         validate: {
             validator: function (value) {
                 // Phone number has 10 digits
                 return (/^[0-9]{12}$/.test(value));
             },
-            message: props => `${props.value} is not a valid ssn`
+            message: props => `${props.value} không phải mã CCCD hợp lệ`
         },
         unique: true
     },
     dateOfBirth: {
         type: Date,
-        required: [true, 'A user must have date of birth']
+        required: [true, 'Người dùng cần có ngày sinh']
     },
     name: {
         type: String,
@@ -33,44 +33,44 @@ const UserSchema = new Schema({
             validator: function (value) {
                 return validator.isAlpha(vietnameseString.format(value).split(' ').join(''));
             },
-            message: props => `${props.value} is not a valid person name`
+            message: props => `${props.value} không phải tên hợp lệ`
         },
-        required: [true, 'A user must have name']
+        required: [true, 'Người dùng cần có tên']
     },
     phone: {
         type: String,
         trim: true,
-        required: [true, 'A user must have phone number'],
+        required: [true, 'Người dùng cần có số điện thoại'],
         validate: {
             validator: function (value) {
                 // Phone number has 10 digits
                 return (/^[0-9]{10}$/.test(value));
             },
-            message: props => `${props.value} is not a valid phone number`
+            message: props => `${props.value} không phải số điẹn thoại hợp lệ`
         },
         unique: true
     },
     email: {
         type: String,
         trim: true,
-        required: [true, 'A user must have email'],
+        required: [true, 'Người dùng cần có email'],
         validate: {
             validator: validator.isEmail,
-            message: props => `${props.value} is not a valid email address`
+            message: props => `${props.value} không phải địa chỉ email hợp lệ`
         },
         unique: true
     },
     password: {
         type: String,
         trim: true,
-        required: [true, 'Please provide a password'],
+        required: [true, 'Bạn cần nhập mật khẩu'],
         minlength: 8,
         select: false
     },
     passwordConfirm: {
         type: String,
         trim: true,
-        required: [true, 'Please confirm your password'],
+        required: [true, 'Bạn cần xác nhận mật khẩu'],
         validate: {
             // This only works on CREATE and SAVE!!!
             validator: function (el) {
@@ -91,7 +91,7 @@ const UserSchema = new Schema({
         type: String,
         enum: {
             values: ['staff', 'admin'],
-            message: props => `${props.value} is not a valid role`
+            message: props => `${props.value} không phải vai trò hợp lệ`
         }
     },
     active: {

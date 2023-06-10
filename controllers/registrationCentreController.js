@@ -17,7 +17,7 @@ exports.deleteCentre = factory.deleteOne(RegistrationCentre);
 exports.deactivateCentre = catchAsync(async (req, res, next) => {
     const centre = await RegistrationCentre.findById(req.params.id);
     if (!centre) {
-        return next(new AppError('No centre found with this id', 404));
+        return next(new AppError('Không có bản ghi nào được tìm thấy', 404));
     }
     const message = 'Your centre has been inactivated. Please contact your administrator for more information.';
     const emails = [centre.email];
@@ -69,7 +69,7 @@ exports.getCentre = catchAsync(async (req, res, next) => {
     const doc = await query;
 
     if (!doc) {
-        return next(new AppError('No document found with that ID', 404));
+        return next(new AppError('Không có bản ghi nào được tìm thấy', 404));
     }
     doc.inspections = await Inspection.aggregate([
         {

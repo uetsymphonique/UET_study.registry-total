@@ -25,7 +25,7 @@ exports.updateCar = catchAsync(async (req, res, next) => {
     });
 
     if (!doc) {
-        return next(new AppError('No document found with that ID', 404));
+        return next(new AppError('Không có bản ghi nào được tìm thấy', 404));
     }
 
     res.status(200)
@@ -43,7 +43,7 @@ exports.inspectCar = catchAsync(async (req, res, next) => {
         runValidators: true
     });
     if (!inspectedCar) {
-        return next(new AppError('No document found with that ID', 404));
+        return next(new AppError('Không có bản ghi nào được tìm thấy', 404));
     }
     res.status(200)
         .json({
@@ -56,7 +56,7 @@ exports.inspectCar = catchAsync(async (req, res, next) => {
 });
 exports.upload = catchAsync(async (req, res, next) => {
     if (!req.file || !req.file.filename) {
-        return next(new AppError('No file uploaded!', 400));
+        return next(new AppError('Không có file nào được tải lên!', 400));
     } else {
         const data = await Car.create(xlsxToJson(req.file.path));
         res.status(201)

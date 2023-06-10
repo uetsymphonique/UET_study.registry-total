@@ -13,7 +13,7 @@ const InspectionSchema = new Schema({
             validator: function (value) {
                 return (/^\d{4}-\d{6}$/.test(value));
             },
-            message: props => `${props.value} is not a valid registration number`
+            message: props => `${props.value} không phải số đăng kiểm hợp lệ`
         }
     },
     expiredDate: {
