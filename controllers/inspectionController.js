@@ -291,9 +291,9 @@ const pipeline_lookupCentre = [
             centreAddress: '$registrationCentre.address'
         }
     }, {
-        $project: {
-            registrationCentre: 0
-        }
+        // $project: {
+        //     registrationCentre: 0
+        // }
     }
 ]
 const pipeline_matchCentreById = (id) => [
