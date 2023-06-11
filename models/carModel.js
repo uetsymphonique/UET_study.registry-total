@@ -163,7 +163,7 @@ const CarSchema = new Schema({
         type: String,
         enum: {
             values: ['personal', 'business'],
-            message: 'Only personal or business purpose'
+            message: 'Xe chỉ sử dụng cho mục đích kinh doanh (business) hoặc mục đích cá nhân (personal)'
         }
     },
     specification: {

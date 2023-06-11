@@ -41,7 +41,7 @@ const handleDuplicateFieldsDB = (err) => {
 const handleValidationErrorDB = (err) => {
     const errors = Object.values(err.errors)
         .map((el) => el.message);
-    const message = `Giá trị đã nhập không hợp lệ. ${errors.join('. ')}`;
+    const message = `Giá trị đã nhập không hợp lệ. ${errors.join('.\n')}`;
     return new AppError(message, 400);
 };
 const handleJWTError = (err) => {
