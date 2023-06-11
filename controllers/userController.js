@@ -5,6 +5,7 @@ const factory = require('./handleFactory')
 const filterObj = require('./../utils/filterObj');
 const sendEmail = require('../utils/email');
 const crypto = require('crypto');
+const validator = require('validator')
 
 
 exports.getAllUsers = factory.getAll(User);
@@ -59,6 +60,9 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
         });
 });
 exports.createAccount = catchAsync(async (req, res, next) => {
+    if (!validator.isEmail(req.body.email)) {
+        return next(new AppError('Email không hợp lệ!', 400));
+    }
     const randomPassword = crypto.randomBytes(8)
         .toString('hex');
     req.body.password = randomPassword;
