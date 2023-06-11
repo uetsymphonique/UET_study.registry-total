@@ -48,7 +48,7 @@ exports.inspectCar = catchAsync(async (req, res, next) => {
     res.status(200)
         .json({
             status: 'success',
-            message: 'Inspect car successfully!',
+            message: 'Kết quả đăng kiểm xe đã được ghi nhận!',
             data: {
                 data: inspectedCar
             }
