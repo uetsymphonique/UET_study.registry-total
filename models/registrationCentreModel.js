@@ -40,7 +40,10 @@ const RegistrationCentreSchema = new Schema({
             message: props => `${props.value} không phải vùng hợp lệ`
         }
     },
-    slug: String,
+    slug: {
+        type: String,
+        unique: true
+    },
     description: {
         type: String,
         trim: true

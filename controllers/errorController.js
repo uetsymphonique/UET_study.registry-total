@@ -29,19 +29,19 @@ const sendErrorProd = (err, res) => {
     }
 };
 const handleCastErrorDB = (err) => {
-    const message = `Invalid ${err.path}: ${err.value}`;
+    const message = `${err.path} không hợp lệ: ${err.value}`;
     return new AppError(message, 400);
 };
 const handleDuplicateFieldsDB = (err) => {
     const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
     console.log(value);
-    const message = `Duplicate field value: ${value}. Please use another value instead`;
+    const message = `${Object.keys(err.keyValue)} đã trùng lặp!`;
     return new AppError(message, 400);
 };
 const handleValidationErrorDB = (err) => {
     const errors = Object.values(err.errors)
         .map((el) => el.message);
-    const message = `Invalid input data. ${errors.join('. ')}`;
+    const message = `Giá trị đã nhập không hợp lệ. ${errors.join('. ')}`;
     return new AppError(message, 400);
 };
 const handleJWTError = (err) => {

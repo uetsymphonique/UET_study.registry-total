@@ -51,12 +51,12 @@ exports.deactivateCentre = catchAsync(async (req, res, next) => {
         });
 
 })
-exports.getCentre = factory.getOne(RegistrationCentre, {
-    path: 'employees',
-    select: '-password -passwordResetToken -passwordResetExpires'
-}, {
-    path: 'inspections',
-});
+// exports.getCentre = factory.getOne(RegistrationCentre, {
+//     path: 'employees',
+//     select: '-password -passwordResetToken -passwordResetExpires'
+// }, {
+//     path: 'inspections',
+// });
 
 
 exports.getCentre = catchAsync(async (req, res, next) => {
