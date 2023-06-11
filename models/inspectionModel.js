@@ -131,6 +131,9 @@ InspectionSchema.pre('find', function (next) {
     this.populate({
         path: 'car',
         select: 'numberPlate'
+    }).populate({
+        path: 'centre',
+        select: 'name'
     });
     next();
 })
