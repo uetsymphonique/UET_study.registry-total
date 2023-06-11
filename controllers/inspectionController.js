@@ -290,10 +290,6 @@ const pipeline_lookupCentre = [
             centreArea: '$registrationCentre.area',
             centreAddress: '$registrationCentre.address'
         }
-    }, {
-        // $project: {
-        //     registrationCentre: 0
-        // }
     }
 ]
 const pipeline_matchCentreById = (id) => [
@@ -342,6 +338,7 @@ const pipeline_getCentreAnalytics = [
         $group: {
             _id: '$centreName',
             count: {$sum: 1},
+            id: {$max: '$registrationCentre._id'}
         }
     }, {
         $addFields: {
