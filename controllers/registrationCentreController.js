@@ -10,7 +10,8 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 const mongoose = require('mongoose');
 
-exports.getAllCentres = factory.getAll(RegistrationCentre)
+exports.getAllCentres = factory.getAll(RegistrationCentre);
+exports.getNumberOfCentres = factory.getNumberOfDocuments(RegistrationCentre);
 exports.createCentre = factory.createOne(RegistrationCentre)
 exports.updateCentre = factory.updateOne(RegistrationCentre);
 exports.deleteCentre = factory.deleteOne(RegistrationCentre);

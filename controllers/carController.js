@@ -15,6 +15,7 @@ exports.setAdditionalParams = (req, res, next) => {
 };
 exports.getAllCars = factory.getAll(Car)
 exports.getCar = factory.getOne(Car, {path: 'inspections'});
+exports.getNumberOfCars = factory.getNumberOfDocuments(Car);
 exports.createCar = factory.createOne(Car);
 exports.deleteCar = factory.deleteOne(Car);
 exports.updateCar = catchAsync(async (req, res, next) => {

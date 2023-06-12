@@ -21,7 +21,8 @@ exports.setAdditionalParams = (req, res, next) => {
     if (!req.params.centreId) req.params.centreId = req.user.workFor;
     next();
 };
-exports.getAllInspections = factory.getAll(Inspection)
+exports.getAllInspections = factory.getAll(Inspection);
+exports.getNumberOfInspections = factory.getNumberOfDocuments(Inspection);
 exports.getInspection = factory.getOne(Inspection,
     {
         path: 'madeBy',

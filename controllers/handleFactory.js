@@ -93,3 +93,26 @@ exports.getAll = Model =>
                 }
             });
     });
+
+exports.getNumberOfDocuments = Model =>
+    catchAsync(async (req, res, next) => {
+        // To allow for nested GET reviews on tour (hack)
+        let filter = {};
+        if (req.params.userId) filter.madeBy = req.params.userId;
+        if (req.params.carId) filter.car = req.params.carId;
+        if (req.params.centreId) filter.centre = req.params.centreId
+        const features = new APIFeatures(Model.countDocuments(filter), req.query)
+            .filter()
+            .sort()
+            .limitFields()
+            .paginate();
+        // console.log(await features.query.explain());
+        const doc = await features.query;
+
+        // SEND RESPONSE
+        res.status(200)
+            .json({
+                status: 'success',
+                results: doc
+            });
+    });

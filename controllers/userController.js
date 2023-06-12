@@ -9,6 +9,7 @@ const validator = require('validator')
 
 
 exports.getAllUsers = factory.getAll(User);
+exports.getNumberOfUsers = factory.getNumberOfDocuments(User);
 
 exports.getMe = catchAsync(async (req, res, next) => {
     // 1) Create error if user POSTs password data
