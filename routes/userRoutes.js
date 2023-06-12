@@ -9,7 +9,11 @@ const router = express.Router();
  * Get all inspections made by myself
  */
 router.route('/inspections')
-    .get(AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalUserId, InspectionController.getAllInspections)
+    .get(AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalUserId, InspectionController.getAllInspections);
+router.route('/inspections/numberOfDocuments')
+    .get(AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalUserId, InspectionController.getNumberOfInspections);
+
+
 
 /**
  * route users/registrationCentres/inspections (staff only)
