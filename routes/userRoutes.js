@@ -23,6 +23,7 @@ router.get('/registrationCentres/inspections/numberOfDocuments',AuthController.p
  * Get all inspections made by a particular staff
  */
 router.get('/:userId/inspections', AuthController.protect, AuthController.restrictTo('admin'), InspectionController.getAllInspections);
+router.get('/:userId/inspections/numberOfDocuments', AuthController.protect, AuthController.restrictTo('admin'), InspectionController.getNumberOfInspections);
 
 
 // router.post('/signup', AuthController.signup);
