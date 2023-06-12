@@ -125,7 +125,8 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 UserSchema.pre('save', async function (next)  {
-    const centre = await RegistrationCentre.findById(this.workFor)
+    const centre = await RegistrationCentre.findById(this.workFor);
+    if (!centre) next();
     this.role = (centre.role === 'registry-total') ? 'admin' : 'staff';
     next();
 })

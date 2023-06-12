@@ -86,7 +86,6 @@ const RegistrationCentreSchema = new Schema({
             message: props => `${props.value} không phải vai trò hợp lệ`
         },
         default: 'registry-branch',
-        select: false
     }
 }, {
     toJSON: {virtuals: true},
