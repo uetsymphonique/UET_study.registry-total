@@ -16,6 +16,8 @@ router.route('/inspections')
  * Get all inspections made by my centre
  */
 router.get('/registrationCentres/inspections',AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalCentreId, InspectionController.getAllInspections);
+router.get('/registrationCentres/inspections/numberOfDocuments',AuthController.protect, AuthController.restrictTo('staff'), InspectionController.setAdditionalCentreId, InspectionController.getNumberOfInspections);
+
 /**
  * route /users/:userId/inspections (admin only)
  * Get all inspections made by a particular staff
@@ -81,6 +83,11 @@ router.delete('/deleteMe', AuthController.protect, UserController.deleteMe);
  * Get your profiles
  */
 router.get('/getMe', AuthController.protect, UserController.getMe);
+
+/**
+ * route users/numberOfDocuments
+ */
+router.get('/numberOfDocuments', AuthController.protect, AuthController.restrictTo('admin'), UserController.getNumberOfUsers);
 
 /**
  * Basic CRUD routes

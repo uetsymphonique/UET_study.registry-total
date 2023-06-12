@@ -16,12 +16,16 @@ router.use(AuthController.protect, AuthController.restrictTo('admin'));
  * Deactivate a centre and all its employees
  */
 router.delete('/deactivateCentre/:id', RegistrationCentreController.deactivateCentre);
+
+
 /**
  * Routing to /inspections
  * Usage: /registrationCentre/:centreId/inspections/...
  * For: Get all inspections or inspection statistics of a particular centre
  */
 router.use('/:centreId/inspections', InspectionRouter);
+
+
 /**
  * Routing to /cars
  * Usage: /registrationCentre/:centerId/cars/...
@@ -29,6 +33,7 @@ router.use('/:centreId/inspections', InspectionRouter);
  */
 router.use('/:centreId/cars', CarRouter);
 
+router.get('/numberOfDocuments', RegistrationCentreController.getNumberOfCentres);
 /**
  * Basic CRUD routes
  */

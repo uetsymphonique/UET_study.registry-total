@@ -7,6 +7,10 @@ const router = express.Router({mergeParams: true});
  * Require login with all routes
  */
 router.use(AuthController.protect);
+/**
+ * Count number of documents
+ */
+router.get('/numberOfDocuments', InspectionController.getNumberOfInspections);
 
 /**
  * Basic CRUD routes

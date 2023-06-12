@@ -1,6 +1,7 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const APIFeatures = require('./../utils/apiFeatures');
+const APIFeatures_countDocs = require('./../utils/apiFeatures_countDocs');
 
 exports.deleteOne = Model =>
     catchAsync(async (req, res, next) => {
@@ -96,16 +97,11 @@ exports.getAll = Model =>
 
 exports.getNumberOfDocuments = Model =>
     catchAsync(async (req, res, next) => {
-        // To allow for nested GET reviews on tour (hack)
         let filter = {};
         if (req.params.userId) filter.madeBy = req.params.userId;
         if (req.params.carId) filter.car = req.params.carId;
         if (req.params.centreId) filter.centre = req.params.centreId
-        const features = new APIFeatures(Model.countDocuments(filter), req.query)
-            .filter()
-            .sort()
-            .limitFields()
-            .paginate();
+        const features = new APIFeatures_countDocs(Model.where(filter).countDocuments(), req.query).filter();
         // console.log(await features.query.explain());
         const doc = await features.query;
 
