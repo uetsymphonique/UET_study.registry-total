@@ -46,6 +46,9 @@ router.get('/centreStatistics/year', InspectionController.setAdditionalCentreId,
 
 /**
  * route /inspections/centreStatistics/monthYear
+ * Usage: /inspections/centreStatistics/monthYear (staff)
+ *        /registrationCentres/:centreId/inspections/centreStatistics/monthYear (admin)
+ * Number of inspections made by your centre (with staff) or a centre (with admin) in each month of years
  */
 router.get('/centreStatistics/monthYear', InspectionController.setAdditionalCentreId, InspectionController.monthYearStatsOfCentre);
 /**
@@ -66,5 +69,6 @@ router.get('/allCentresStatistics/season/:year', AuthController.restrictTo('admi
 router.get('/allCentresStatistics/year', AuthController.restrictTo('admin'), InspectionController.yearStatsOfAllCentres);
 router.get('/allCentresStatistics/centre', AuthController.restrictTo('admin'), InspectionController.centreStatsOfAllCentres);
 router.get('/allCentresStatistics/monthExpired/:year', AuthController.restrictTo('admin'), InspectionController.monthExpiredStatsInYearOfAllCentres);
+router.get('/allCentresStatistics/monthyear', AuthController.restrictTo('admin'), InspectionController.monthYearStatsOfCentres);
 
 module.exports = router;
