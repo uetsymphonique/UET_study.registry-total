@@ -46,7 +46,7 @@ const UserSchema = new Schema({
                 // Phone number has 10 digits
                 return (/^[0-9]{10}$/.test(value));
             },
-            message: props => `${props.value} không phải số điẹn thoại hợp lệ`
+            message: props => `${props.value} không phải số điện thoại hợp lệ`
         },
         unique: true
     },

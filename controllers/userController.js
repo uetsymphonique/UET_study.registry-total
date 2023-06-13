@@ -83,7 +83,7 @@ exports.createAccount = catchAsync(async (req, res, next) => {
     res.status(200)
         .json({
             status: 'success',
-            message: 'Đã gửi thong báo qua email tới người dùng. Tài khoản được tạo thành công!',
+            message: 'Đã gửi thông báo qua email tới người dùng. Tài khoản được tạo thành công!',
             data: {
                 data: newUser
             }
@@ -113,7 +113,7 @@ exports.deactivateAccount = catchAsync(async (req, res, next) => {
     res.status(204)
         .json({
             status: 'success',
-            message: 'Đã gửi thong báo qua email tới người dùng. Tài khoản này đã bị vô hiệu hoá!'
+            message: 'Đã gửi thông báo qua email tới người dùng. Tài khoản này đã bị vô hiệu hoá!'
         });
 });
 
