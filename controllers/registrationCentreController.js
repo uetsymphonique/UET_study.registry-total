@@ -72,7 +72,7 @@ exports.getCentre = catchAsync(async (req, res, next) => {
     if (!doc) {
         return next(new AppError('Không có bản ghi nào được tìm thấy', 404));
     }
-    doc.inspections = await Inspection.aggregate([
+    /*doc.inspections = await Inspection.aggregate([
         {
             $lookup: {
                 from: 'users',
@@ -89,7 +89,7 @@ exports.getCentre = catchAsync(async (req, res, next) => {
                 user: 0
             }
         }
-    ]);
+    ]);*/
     res.status(200)
         .json({
             status: 'success',
