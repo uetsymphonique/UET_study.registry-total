@@ -55,18 +55,18 @@ exports.inspectCar = catchAsync(async (req, res, next) => {
             }
         })
 });
-exports.upload = catchAsync(async (req, res, next) => {
-    if (!req.file || !req.file.filename) {
-        return next(new AppError('Không có file nào được tải lên!', 400));
-    } else {
-        const data = await Car.create(xlsxToJson(req.file.path));
-        res.status(201)
-            .json({
-                status: 'success',
-                // data
-            })
-    }
-});
+// exports.upload = catchAsync(async (req, res, next) => {
+//     if (!req.file || !req.file.filename) {
+//         return next(new AppError('Không có file nào được tải lên!', 400));
+//     } else {
+//         const data = await Car.create(xlsxToJson(req.file.path));
+//         res.status(201)
+//             .json({
+//                 status: 'success',
+//                 // data
+//             })
+//     }
+// });
 exports.currentMonthExpiredPredictionsOfAllCentres = catchAsync(async (req, res, next) => {
     const features = new APIFeatures_aggregate(Inspection.aggregate([
         ...pipeline_groupCars,
